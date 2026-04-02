@@ -1,83 +1,74 @@
-# CaseStudy Engine Project
+# 🚀 CaseStudy Agent API: Overview
 
-## Overview
-CaseStudy is an interactive simulation engine designed for medical and emergency response training. It uses **LangGraph** to coordinate a complex workflow of LLM-based reasoning, semantic retrieval, and state management. The project follows a unique **"3-Layer Memory"** architecture to ensure simulation consistency and realism.
-
-### 🧠 3-Layer Memory Architecture
-1.  **Logic Memory (Tầng 1 - Structured):** Defined in `skeleton.json` files. It governs the flow of the simulation using "Canon Events," preconditions, and success/failure transitions.
-2.  **Semantic Memory (Tầng 2 - Ngữ nghĩa):** Uses Vector Databases (ChromaDB/Pinecone) to store scene descriptions, persona data (character traits), and policies (medical rules/guidelines).
-3.  **Runtime State (Tầng 3 - Active Memory):** Manages the live simulation state, including dialogue history, persona trust levels, and current student actions.
+Welcome to the **CaseStudy Engine** Backend system. This is the central hub for coordinating authentication, case management, and realistic AI simulation.
 
 ---
 
 ## 🛠 Tech Stack
-- **Language:** Python 3.12+
-- **Orchestration:** LangGraph, LangChain
-- **LLMs:** OpenAI (GPT-4o), Google Gemini (via `langchain-google-genai`)
-- **Web Framework:** FastAPI, Uvicorn
-- **Databases:** 
-  - **Vector:** ChromaDB, Pinecone
-  - **Document:** MongoDB (PyMongo)
-- **Environment Management:** Poetry, uv, Conda
-- **Frontend:** Vanilla HTML/JS/CSS (TailwindCSS for some components)
+- **Framework:** FastAPI
+- **Database:** MongoDB Atlas (Async Motor driver)
+- **Security:** JWT (JSON Web Tokens) & Bcrypt
+- **Runtime:** Python 3.12+
 
 ---
 
-## 📂 Project Structure
-- `casestudy/agent/`: Core LangGraph implementation.
-  - `nodes/`: Individual processing steps (Ingress, Semantic, Policy, Action, etc.).
-  - `chains/`: LLM-specific chains for scene narration, persona digests, and responding.
-  - `state.py`: Pydantic models for simulation state.
-  - `graph.py`: Assembly of the LangGraph workflow.
-- `casestudy/app/`: The primary web application.
-  - `api/v1/`: API endpoints for managing cases and user sessions.
-  - `frontend/`: Static web files (Login, Case Selection, Chat Interface).
-- `api_casestudy/`: A specialized API service for agent coordination.
-- `casestudy/utils/`: Utilities for DB management, semantic extraction, and document building.
-- `casestudy/agent/cases/`: Definition files for specific simulation cases (e.g., `electric_shock_001`).
+## 🔑 Authentication
+
+This is the sole entry point for connecting Unity to the Backend. The system uses JWT to secure sessions.
+
+### 1. Register
+- **Endpoint:** `POST /api/register`
+- **Body:**
+  ```json
+  {
+    "email": "user@example.com",
+    "password": "yourpassword"
+  }
+  ```
+- **Note:** Passwords are encrypted with Bcrypt before being stored in MongoDB. User data is stored in the `member` collection.
+
+### 2. Login
+- **Endpoint:** `POST /api/login`
+- **Body:** Same as registration.
+- **Response:**
+  ```json
+  {
+    "access_token": "eyJhbG...",
+    "token_type": "bearer"
+  }
+  ```
+- **Note:** This token is valid for 30 days so users do not need to log in repeatedly on Unity.
 
 ---
 
-## 🚀 Building and Running
+## 🏗 Case & State Management
 
-### Prerequisites
-- Python 3.12
-- Poetry or `uv`
-- MongoDB (running locally or via URI in `.env`)
-- OpenAI/Google API Keys (configured in `.env`)
+The system supports storing entire simulation cases in flexible JSON format. For details on this data structure, please refer to: [STATE_SPEC.md](./STATE_SPEC.md).
 
-### Installation
+---
+
+## ⚡ How to Run the Backend
+
+### 1. Environment Configuration
+Create a `.env` file in the root directory with the following:
+```env
+MONGO_URI=mongodb+srv://...
+JWT_SECRET=your_jwt_secret_key
+OPENAI_API_KEY=sk-...
+```
+
+### 2. Installation and Running
 ```bash
-poetry install
-# or
+# Install dependencies
 uv sync
-```
 
-### Database Initialization
-```bash
-python casestudy/utils/create_DB.py
+# Run server
+python api_casestudy/main.py
 ```
-
-### Running the CLI Engine
-```bash
-python casestudy/main.py --case-id electric_shock_001
-```
-
-### Running the Web Applications
-1.  **Main Web App (Frontend + Case Management):**
-    ```bash
-    uvicorn casestudy.app.main:app --reload --port 8000
-    ```
-2.  **Agent API Service (Agent Coordination):**
-    ```bash
-    uvicorn api_casestudy.main:app --reload --port 8001
-    ```
+The server will run by default at: `http://localhost:8001`
 
 ---
 
-## 🤝 Development Conventions
-- **State Management:** Use `RuntimeState` (defined in `casestudy/agent/state.py`) for all simulation data. Avoid direct I/O in LangGraph nodes; use `RuntimeStateStore`.
-- **Logic Updates:** Any changes to the simulation flow must be reflected in the `skeleton.json` of the respective case.
-- **Semantic Updates:** Use `casestudy/utils/semantic_extract.py` to rebuild vector indexes when scene or policy data changes.
-- **Coding Style:** Strictly follow PEP 8; use Pydantic for data validation and type hinting throughout the project.
-- **Testing:** Run tests using `pytest`. New features should include corresponding test cases in `casestudy/app/tests/` or root test files.
+## 🧪 Auto-Generated API Documentation (Swagger UI)
+After starting the server, you can access:
+👉 `http://localhost:8001/docs` to view and test all APIs directly in the browser.

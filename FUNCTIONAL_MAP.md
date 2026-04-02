@@ -1,67 +1,67 @@
 # 🗺️ CaseStudy Engine: Functional Map
 
-Tài liệu này phân rã toàn bộ chức năng của hệ thống để hỗ trợ việc quản lý dự án và phân chia công việc trong Team.
+This document decomposes all system functionalities to support project management and team task allocation.
 
 ---
 
-## 1. Sơ đồ phân rã chức năng (FDD)
+## 1. Feature-Driven Decomposition (FDD)
 
 ```mermaid
 graph TD
-    Root[CaseStudy Engine] --> Auth[1. Hệ thống Xác thực]
-    Root --> Designer[2. Bộ thiết kế kịch bản Designer]
-    Root --> Library[3. Thư viện Tài nguyên]
-    Root --> Simulator[4. Chế độ Mô phỏng Simulator]
-    Root --> Backend[5. Bộ não AI & Dữ liệu]
+    Root[CaseStudy Engine] --> Auth[1. Authentication System]
+    Root --> Designer[2. Case Designer Tool]
+    Root --> Library[3. Asset Library]
+    Root --> Simulator[4. Simulation Mode]
+    Root --> Backend[5. AI Brain & Data]
 
     %% 1. Authentication
-    Auth --> Login[Đăng nhập / Đăng ký]
-    Auth --> JWT[Quản lý Phiên Token JWT]
+    Auth --> Login[Login / Register]
+    Auth --> JWT[JWT Session Token Management]
 
     %% 2. Designer
-    Designer --> EnvDesign[Dựng môi trường 3D]
-    Designer --> PersonaConfig[Cấu hình Persona & Tính cách]
-    Designer --> RewardSetup[Thiết lập Logic Chấm điểm]
-    Designer --> Persistence[Lưu kịch bản vào MongoDB]
+    Designer --> EnvDesign[3D Environment Setup]
+    Designer --> PersonaConfig[Persona & Trait Configuration]
+    Designer --> RewardSetup[Scoring Logic Setup]
+    Designer --> Persistence[Save Cases to MongoDB]
 
     %% 3. Library
-    Library --> Browse[Duyệt danh sách Env/Persona]
-    Library --> Search[Tìm kiếm & Lọc tài nguyên]
+    Library --> Browse[Browse Env/Persona List]
+    Library --> Search[Search & Filter Assets]
 
     %% 4. Simulator
-    Simulator --> Roleplay[Tương tác NPC - Multi-Agent]
-    Simulator --> ScoreSystem[Chấm điểm thời gian thực]
-    Simulator --> EnvInter[Tương tác Vật thể Thông minh]
-    Simulator --> Feedback[Báo cáo & Nhận xét cuối buổi]
+    Simulator --> Roleplay[NPC Interaction - Multi-Agent]
+    Simulator --> ScoreSystem[Real-time Scoring]
+    Simulator --> EnvInter[Smart Object Interaction]
+    Simulator --> Feedback[Post-session Report & Feedback]
 
     %% 5. AI Backend
-    Backend --> LangGraph[Điều phối Multi-Agent]
-    Backend --> RAG[Tru xuất Tri thức & Trích dẫn]
-    Backend --> DB[Quản lý Cơ sở dữ liệu MongoDB]
+    Backend --> LangGraph[Multi-Agent Orchestration]
+    Backend --> RAG[Knowledge Retrieval & Citation]
+    Backend --> DB[MongoDB Database Management]
 ```
 
 ---
 
-## 2. Mô tả chi tiết Module
+## 2. Module Detailed Descriptions
 
-### 🏗️ Module 1: Authentication (Xác thực)
-- **Vai trò:** Cổng vào bảo mật của ứng dụng.
-- **Trạng thái Unity:** `SimulationState.MainMenu` -> `SimulationState.Login`.
-- **Kết nối Backend:** Endpoint `/api/login` & `/api/register`.
+### 🏗️ Module 1: Authentication
+- **Role:** Application security entry gate.
+- **Unity State:** `SimulationState.MainMenu` -> `SimulationState.Login`.
+- **Backend Connection:** Endpoint `/api/login` & `/api/register`.
 
-### 🎨 Module 2: Case Designer (Thiết kế)
-- **Vai trò:** Cho phép người dùng tạo ra các tình huống mới.
-- **Tính năng chính:** Kéo thả vật thể, nhập tính cách AI, thiết lập quy tắc cộng/trừ điểm.
-- **Output:** Xuất ra file JSON theo chuẩn `STATE_SPEC.md`.
+### 🎨 Module 2: Case Designer
+- **Role:** Enables users to create new scenarios.
+- **Key Features:** Drag-and-drop objects, enter AI traits, configure point bonus/penalty rules.
+- **Output:** Exports a JSON file conforming to `STATE_SPEC.md`.
 
-### 📚 Module 3: Asset Library (Thư viện)
-- **Vai trò:** Quản lý tài sản (Mô hình 3D, nhân vật).
-- **Tính năng chính:** Hiển thị danh sách các môi trường (Sảnh khách sạn, phòng khám) và các Persona có sẵn.
+### 📚 Module 3: Asset Library
+- **Role:** Manages assets (3D models, characters).
+- **Key Features:** Displays a list of available environments (Hotel lobby, clinic) and Personas.
 
-### 🎭 Module 4: Simulator (Mô phỏng)
-- **Vai trò:** Nơi diễn ra sự tương tác giữa Người và AI.
-- **Tính năng chính:** Chatbox tương tác, nhân vật thực hiện hành động/cảm xúc, chấm điểm dựa trên hành vi người dùng.
+### 🎭 Module 4: Simulator
+- **Role:** Where human-AI interaction takes place.
+- **Key Features:** Interactive chatbox, character performs actions/expressions, scoring based on user behavior.
 
-### 🧠 Module 5: AI & Data (Hậu phương)
-- **Vai trò:** Xử lý logic thông minh và lưu trữ.
-- **Công nghệ:** FastAPI, MongoDB, LangGraph (Multi-Agent).
+### 🧠 Module 5: AI & Data
+- **Role:** Intelligent logic processing and storage.
+- **Technology:** FastAPI, MongoDB, LangGraph (Multi-Agent).
