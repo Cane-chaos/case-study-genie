@@ -1,26 +1,26 @@
 # CaseStudy Unity M4
 
-Tổng quan dự án (Unity, UI Toolkit + C#):
+Project overview (Unity, UI Toolkit + C#):
 
-- `_Project/` — thư mục nguồn chính (tránh nhầm với plugin tải về).
+- `_Project/` — main source folder (distinguished from downloaded plugins).
   - `Scripts/`
-    - `Core/`: Các Manager điều phối luồng chính (SimulationManager, EventManager, v.v.).
-    - `UI/`: Controller giao diện (UI Toolkit, events, binding).
-    - `Models/`: Các lớp dữ liệu (CaseStudyData, PersonaConfig...).
-    - `Networking/`: Gọi API tới Python Backend.
+    - `Core/`: Managers coordinating the main flow (SimulationManager, EventManager, etc.).
+    - `UI/`: UI controllers (UI Toolkit, events, binding).
+    - `Models/`: Data classes (CaseStudyData, PersonaConfig...).
+    - `Networking/`: API calls to Python Backend.
   - `UI/`
-    - `Documents/`: File `.uxml` định nghĩa layout giao diện.
-    - `Styles/`: File `.uss` (CSS cho Unity).
+    - `Documents/`: `.uxml` files defining UI layouts.
+    - `Styles/`: `.uss` files (CSS for Unity).
   - `Prefabs/`
-    - `Environments/`: Sảnh khách sạn, phòng mẫu.
-    - `Characters/`: Mr. Viktor và các nhân vật khác.
+    - `Environments/`: Hotel lobby, sample rooms.
+    - `Characters/`: Mr. Viktor and other characters.
 
-Hướng dẫn nhanh:
-- Mở scene chính, chạy Play: `SimulationManager` giữ trạng thái và phát event qua `EventManager` cho UI.
-- Thêm UI: tạo `.uxml` trong `UI/Documents`, style với `.uss` trong `UI/Styles`, và controller C# trong `Scripts/UI`.
-- Dữ liệu case: định nghĩa trong `Scripts/Models`, load/parse rồi cấp cho UI.
-- Kết nối backend: đặt mã gọi API tại `Scripts/Networking` (REST/gRPC tuỳ backend Python).
+Quick start:
+- Open the main scene and press Play: `SimulationManager` holds the state and fires events through `EventManager` to the UI.
+- Add UI: create `.uxml` in `UI/Documents`, style with `.uss` in `UI/Styles`, and C# controller in `Scripts/UI`.
+- Case data: define in `Scripts/Models`, load/parse, then pass to the UI.
+- Connect backend: place API call code in `Scripts/Networking` (REST/gRPC depending on Python backend).
 
-Ghi chú:
-- Giữ đúng cấu trúc thư mục để tránh xung đột khi nhập asset/plugin.
-- Prefabs môi trường/nhân vật nên tham chiếu script và style qua UI Toolkit thay vì hardcode.
+Notes:
+- Keep the folder structure consistent to avoid conflicts when importing assets/plugins.
+- Environment/character prefabs should reference scripts and styles via UI Toolkit rather than hardcoding.
