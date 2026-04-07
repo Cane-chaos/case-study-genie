@@ -1,9 +1,4 @@
-﻿/* ═══════════════════════════════════════════════════════════
-   Sample.uss — Auth UI Stylesheet
-   Unity UI Toolkit
-═══════════════════════════════════════════════════════════ */
-
-/* ─── 1. INPUT FIELDS ─────────────────────────────────────── */
+﻿
 .input-field {
     width: 80%;
     height: 80px;
@@ -13,27 +8,22 @@
     color: rgb(30, 30, 30);
     -unity-text-align: middle-center;
 
-    /* Nền trắng mờ kiểu glassmorphism */
     background-color: rgba(255, 255, 255, 0.92);
 
-    /* Viền sáng nhẹ */
     border-width: 2px;
     border-color: rgba(255, 255, 255, 0.6);
 
-    /* Đổ bóng trong */
     -unity-font-style: normal;
 
     transition-duration: 0.2s;
 }
 
-/* Focus — viền sáng lên khi đang gõ */
 .input-field:focus {
     border-color: rgba(191, 147, 209, 0.9);
     background-color: rgba(255, 255, 255, 1);
     scale: 1.01;
 }
 
-/* ─── 2. BUTTONS — Base ───────────────────────────────────── */
 .auth-button {
     width: 400px;
     height: 80px;
@@ -43,28 +33,23 @@
     -unity-font-style: bold;
     border-width: 0px;
 
-    /* Transition cho tất cả hiệu ứng */
     transition-property: scale, background-color, border-color;
     transition-duration: 0.15s;
     transition-timing-function: ease-out;
 }
 
-/* Hover — phóng to + sáng nhẹ */
 .auth-button:hover {
     scale: 1.06;
     border-width: 2px;
     border-color: rgba(255, 255, 255, 0.5);
 }
 
-/* Active — nhấn xuống */
 .auth-button:active {
     scale: 0.94;
     border-width: 0px;
 }
 
-/* ─── 3. MÀU TỪNG NÚT ─────────────────────────────────────── */
 
-/* Login — tím pastel */
 .btn-login {
     background-color: rgb(191, 147, 209);
     color: rgb(255, 255, 255);
@@ -76,7 +61,6 @@
     background-color: rgb(160, 110, 180);
 }
 
-/* Register — xanh lá vàng */
 .btn-register {
     background-color: rgb(190, 214, 70);
     color: rgb(40, 40, 40);
@@ -88,7 +72,7 @@
     background-color: rgb(160, 185, 45);
 }
 
-/* Forgot — cam đỏ */
+
 .btn-forgot {
     background-color: rgb(229, 90, 33);
     color: rgb(255, 255, 255);
@@ -100,12 +84,9 @@
     background-color: rgb(195, 65, 15);
 }
 
-/* ─── 4. CARD (formlogin) ─────────────────────────────────── */
 .auth-card {
-    /* Nền tối glassmorphism */
     background-color: rgba(34, 26, 26, 0.82);
 
-    /* Viền sáng mờ */
     border-width: 1.5px;
     border-color: rgba(255, 255, 255, 0.12);
 
@@ -115,7 +96,6 @@
     border-bottom-left-radius: 58px;
 }
 
-/* ─── 5. TITLE LABEL ──────────────────────────────────────── */
 .auth-title {
     font-size: 52px;
     color: rgb(241, 24, 24);
@@ -123,11 +103,9 @@
     -unity-text-align: middle-left;
     white-space: normal;
 
-    /* Glow đỏ giả bằng viền text */
     text-shadow: 0px 0px 12px rgba(241, 24, 24, 0.6);
 }
 
-/* ─── 6. MESSAGE LABEL ────────────────────────────────────── */
 .message-label {
     font-size: 24px;
     -unity-text-align: upper-center;

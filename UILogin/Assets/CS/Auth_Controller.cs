@@ -12,18 +12,15 @@ using UnityEngine.UIElements;
 [RequireComponent(typeof(UIDocument))]
 public class Auth_Controller : MonoBehaviour
 {
-    // ─── Config ──────────────────────────────────────────────────
     [Header("FastAPI Backend URL")]
     [SerializeField] private string _baseUrl = "http://localhost:8000";
 
-    // ─── UI References — tên khớp 100% với name trong UXML ──────
-    private TextField _UsernameField;    // name="UsernameField"
-    private TextField _passwordField;   // name="PasswordField"
-    private Button _Loginbtn;         // name="Loginbtn"
-    private Button _RegisterLoginbtn; // name="RegisterLoginbtn"
-    private Button _Forgetpassbtn;    // name="Forgetpassbtn"
+    private TextField _UsernameField;    
+    private TextField _passwordField;   
+    private Button _Loginbtn;         
+    private Button _RegisterLoginbtn; 
+    private Button _Forgetpassbtn;    
 
-    // ─── Unity Lifecycle ─────────────────────────────────────────
     private void OnEnable()
     {
         StartCoroutine(InitUI());
@@ -31,7 +28,7 @@ public class Auth_Controller : MonoBehaviour
 
     private IEnumerator InitUI()
     {
-        yield return null; // đợi UI load xong
+        yield return null; 
 
         var root = GetComponent<UIDocument>().rootVisualElement;
 
@@ -41,16 +38,14 @@ public class Auth_Controller : MonoBehaviour
         Debug.Log("UI READY");
     }
 
-    // ─── Bind — dùng đúng name trong UXML ───────────────────────
     private void BindElements(VisualElement root)
     {
         _UsernameField = root.Q<TextField>("UsernameField");
-        _passwordField = root.Q<TextField>("passwordField");  // giữ nguyên typo
+        _passwordField = root.Q<TextField>("passwordField");  
         _Loginbtn = root.Q<Button>("Loginbtn");
         _RegisterLoginbtn = root.Q<Button>("RegisterLoginbtn");
         _Forgetpassbtn = root.Q<Button>("Forgetpassbtn");
 
-        // Kiểm tra null — log cảnh báo nếu UXML thiếu element
         if (_UsernameField == null) Debug.LogWarning("[Auth] Không tìm thấy UsernameField");
         if (_passwordField == null) Debug.LogWarning("[Auth] Không tìm thấy PasswordField");
         if (_Loginbtn == null) Debug.LogWarning("[Auth] Không tìm thấy Loginbtn");
@@ -58,7 +53,6 @@ public class Auth_Controller : MonoBehaviour
         if (_Forgetpassbtn == null) Debug.LogWarning("[Auth] Không tìm thấy Forgetpassbtn");
     }
 
-    // ─── Register Callbacks ──────────────────────────────────────
     private void RegisterCallbacks()
     {
         _Loginbtn?.RegisterCallback<ClickEvent>(OnLoginClicked);
@@ -73,9 +67,7 @@ public class Auth_Controller : MonoBehaviour
         _Forgetpassbtn?.UnregisterCallback<ClickEvent>(OnForgetPasswordClicked);
     }
 
-    // =========================================================
-    //  BUTTON HANDLERS
-    // =========================================================
+
 
     private void OnLoginClicked(ClickEvent evt)
     {
@@ -109,11 +101,8 @@ public class Auth_Controller : MonoBehaviour
         StartCoroutine(ForgetPasswordRoutine(username));
     }
 
-    // =========================================================
-    //  COROUTINES — Gọi FastAPI
-    // =========================================================
 
-    /// POST /auth/login
+
     private IEnumerator LoginRoutine(string username, string password)
     {
         ShowMessage("Đang đăng nhập...", MessageType.Info);
@@ -132,8 +121,7 @@ public class Auth_Controller : MonoBehaviour
                 PlayerPrefs.SetString("username", username);
                 PlayerPrefs.Save();
 
-                // TODO: Thay SimulationState.Home bằng đúng enum trong project
-                // SimulationManager.Instance.ChangeState(SimulationState.Home);
+
                 Debug.Log("[Auth] Login OK → chuyển sang Home");
             }
             else
@@ -144,13 +132,11 @@ public class Auth_Controller : MonoBehaviour
         }
         else
         {
-            // Chưa có backend → dùng stub local
             Debug.LogWarning($"[Auth] Không kết nối được server: {req.error}. Dùng stub.");
             yield return StubLoginRoutine(username, password);
         }
     }
 
-    /// POST /auth/register
     private IEnumerator RegisterRoutine(string username, string password)
     {
         ShowMessage("Đang đăng ký...", MessageType.Info);
@@ -169,7 +155,6 @@ public class Auth_Controller : MonoBehaviour
                 PlayerPrefs.SetString("username", username);
                 PlayerPrefs.Save();
 
-                // SimulationManager.Instance.ChangeState(SimulationState.Home);
                 Debug.Log("[Auth] Register OK → chuyển sang Home");
             }
             else
@@ -185,7 +170,6 @@ public class Auth_Controller : MonoBehaviour
         }
     }
 
-    /// POST /auth/forget-password
     private IEnumerator ForgetPasswordRoutine(string username)
     {
         ShowMessage("Đang gửi yêu cầu...", MessageType.Info);
@@ -207,13 +191,10 @@ public class Auth_Controller : MonoBehaviour
         SetButtonsEnabled(true);
     }
 
-    // =========================================================
-    //  STUB — Chạy local khi chưa có FastAPI
-    // =========================================================
 
     private IEnumerator StubLoginRoutine(string username, string password)
     {
-        yield return null; // giả lập 1 frame delay
+        yield return null; 
 
         string savedUser = PlayerPrefs.GetString("username", "");
         string savedPass = PlayerPrefs.GetString("password", "");
@@ -221,7 +202,6 @@ public class Auth_Controller : MonoBehaviour
         if (savedUser == username && savedPass == password)
         {
             ShowMessage("[Stub] Đăng nhập thành công!", MessageType.Success);
-            // SimulationManager.Instance.ChangeState(SimulationState.Home);
             Debug.Log("[Auth Stub] Login OK");
         }
         else
@@ -247,14 +227,10 @@ public class Auth_Controller : MonoBehaviour
         PlayerPrefs.Save();
 
         ShowMessage("[Stub] Đăng ký thành công!", MessageType.Success);
-        // SimulationManager.Instance.ChangeState(SimulationState.Home);
         Debug.Log("[Auth Stub] Register OK");
     }
 
-    // =========================================================
-    //  HELPERS
-    // =========================================================
-
+    
     private static UnityWebRequest PostJson(string url, string json)
     {
         var req = new UnityWebRequest(url, "POST");
@@ -271,12 +247,10 @@ public class Auth_Controller : MonoBehaviour
         if (_Forgetpassbtn != null) _Forgetpassbtn.SetEnabled(enabled);
     }
 
-    // ─── Message ─────────────────────────────────────────────────
     private enum MessageType { Info, Success, Error }
 
     private void ShowMessage(string text, MessageType type)
     {
-        // In ra Console — sau này thay bằng Label nếu bạn thêm message-label vào UXML
         switch (type)
         {
             case MessageType.Success: Debug.Log($"[Auth] ✅ {text}"); break;
@@ -305,7 +279,6 @@ public class Auth_Controller : MonoBehaviour
         return true;
     }
 
-    // ─── Data Model ──────────────────────────────────────────────
     [System.Serializable]
     private class AuthResponse
     {
