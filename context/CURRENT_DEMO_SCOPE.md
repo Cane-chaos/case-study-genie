@@ -1,263 +1,168 @@
-# CURRENT_EXPECTED
-
-## 1. Current Goal
-This project is currently **not targeting the full system** yet.
-The immediate objective is to complete **one playable vertical slice** that can be demonstrated clearly.
-
-The current expected scope is:
-1. Build **one Unity 3D map**.
-2. The player takes the role of a **hotel receptionist**.
-3. The AI plays the role of a **customer** who brings a problem based on a scenario.
-4. The player solves the problem through:
-   - **object interaction mode** (guided / multiple-choice style)
-   - **free-text dialogue mode** (open-ended / essay style)
-5. The AI core generates responses, branches the scenario, and scores the player based on the chosen action or typed response.
+# CURRENT_DEMO_SCOPE
+> **Cập nhật lần cuối:** 2026-04-19 — Scope được điều chỉnh: STT là input chính, Smart Object click là Future Implementation.
 
 ---
 
-## 2. Current Product Direction
-The current direction is a **simulation demo**, not a full product suite.
+## 1. Mục Tiêu Hiện Tại
 
-This means the focus is on:
-- one 3D environment
-- one complete interaction loop
-- one AI customer persona
-- one scenario with branching
-- one scoring flow
-- one final feedback screen
+Dự án **không nhắm đến full system** ở giai đoạn này.
+Mục tiêu trước mắt là hoàn thành **một vertical slice demo có thể chạy end-to-end**:
 
-The focus is **not** on completing all planned modules such as full authentication, full asset library, full case designer, or multi-map production.
-
----
-
-## 3. Core Demo Scenario
-The current expected demo scenario is:
-
-- Setting: **Hotel lobby / reception desk**
-- Player role: **Receptionist**
-- AI role: **Customer / VIP guest with a problem**
-- Situation example: customer arrives angry because the room is not ready, booking has an issue, or service expectation is not met.
-
-The purpose of the demo is to show:
-- roleplay between player and AI customer
-- decision making through interaction with work-related objects
-- AI branching based on player handling
-- score and feedback generation
+1. Xây dựng **một map Unity 3D** (sảnh khách sạn).
+2. Người chơi vào vai **nhân viên lễ tân**.
+3. AI vào vai **khách hàng VIP có vấn đề**.
+4. Người chơi **nói bằng giọng nói** (Speech-to-Text) để phản hồi.
+5. NPC **phát âm thanh và nhép miệng** (TTS + Lip-sync) để trả lời.
+6. Hệ thống **phân nhánh kịch bản** và **chấm điểm** theo hành vi.
 
 ---
 
-## 4. Gameplay Modes
-The current expected system must support **2 modes** inside the simulator.
+## 2. Hướng Phát Triển Hiện Tại
 
-### Mode A - Guided Interaction Mode
-This is the **object-based mode**.
-The player interacts with objects in the 3D environment.
-Each object represents **one handling direction** or **one problem-solving action**.
+Tập trung vào **simulation demo**, không phải full product suite.
 
-This mode should behave like a hidden multiple-choice system inside a 3D simulation.
-
-### Mode B - Free Response Mode
-This is the **self-written dialogue mode**.
-The player types what they want to say to the customer.
-The AI evaluates the response and continues the scenario dynamically.
-
-This mode should behave like an open-ended roleplay evaluation mode.
+- ✅ Một môi trường 3D
+- ✅ Một vòng tương tác hoàn chỉnh
+- ✅ Một AI Persona (khách VIP)
+- ✅ Một kịch bản có phân nhánh
+- ✅ Hệ thống chấm điểm
+- ✅ Màn hình tổng kết
 
 ---
 
-## 5. Object Interaction Design Principle
-This is a critical expectation.
+## 3. Demo Scenario
 
-In the current scope, objects are **not only decorative props**.
-Each important object must represent:
-- a business action
-- an information source
-- or a problem-solving direction
-
-### Example interaction mapping
-- **Booking slip** -> verify customer information
-- **Reception computer / terminal** -> check booking or room status
-- **Desk phone** -> call manager or internal department
-- **VIP policy book** -> consult service policy
-- **Voucher / compensation item** -> offer compensation
-- **Keycard / room tool** -> reassign or activate room solution
-
-So in this design:
-- an object is a gameplay decision point
-- interaction with an object is equivalent to choosing a handling strategy
+| Yếu tố | Nội dung |
+|--------|----------|
+| **Bối cảnh** | Sảnh khách sạn / quầy lễ tân |
+| **Vai người chơi** | Nhân viên lễ tân (Receptionist) |
+| **Vai AI** | Khách VIP có vấn đề (phòng chưa sẵn sàng, đặt phòng lỗi...) |
+| **Mục tiêu demo** | Roleplay bằng giọng nói + AI phân nhánh + chấm điểm + NPC lip-sync |
 
 ---
 
-## 6. Expected Meaning of Smart Objects
-Each smart object should carry gameplay meaning beyond its visual representation.
+## 4. Input / Output Chính (⭐ Core Architecture)
 
-Each object is expected to map to:
-- `object_id`
-- `interaction_type`
-- `intent`
-- optional `available_actions`
-- optional score/reward trigger
+### Input: Speech-to-Text (Ưu tiên cao nhất)
 
-### Suggested examples
-- `verify_customer_info`
-- `check_room_status`
-- `call_manager`
-- `call_housekeeping`
-- `offer_compensation`
-- `follow_vip_policy`
-- `reassign_room`
+```
+[Người chơi nhấn/giữ phím Space hoặc nút Mic]
+        ↓
+Unity Microphone API — thu âm PCM
+        ↓
+Convert → WAV bytes
+        ↓
+POST {BackendBaseUrl}/api/stt  ← FastAPI backend
+        ↓
+STTResponse { text, language, confidence }
+        ↓
+Hiển thị text lên UI (subtitle người chơi)
+        ↓
+CaseService.SendTurn(text) → Agent Server
+```
 
-The backend should interpret player interaction through these intents, not only by raw object name.
+**Cài đặt (SpeechInputController.cs):**
+- **Hold-to-Talk:** Giữ `Space` để nói, thả để gửi (mặc định)
+- **Toggle:** Nhấn 1 lần để bắt đầu, nhấn lần nữa để dừng
+- Hiển thị icon mic khi đang thu âm (`EventManager.OnSTTRecordingStarted`)
+- Hiển thị text kết quả (`EventManager.OnSTTResult`)
 
----
+### Output: NPC Lip-sync + Audio (Ưu tiên cao)
 
-## 7. Current AI Core Expectation
-The AI core is expected to do the following:
+```
+[Agent Server trả về AgentTurnResponse]
+        ↓
+Lấy audio_url từ response
+        ↓
+NPCOutputController tải audio từ URL
+        ↓
+AudioSource.Play() — phát giọng NPC
+        ↓
+Đồng thời: Lip-sync theo amplitude của AudioSource
+        ↓
+EventManager.TriggerNPCSpeakStart / SpeakEnd
+        ↓
+Animator trigger theo persona_emotion ("angry", "calm"...)
+```
 
-1. Play the customer persona consistently.
-2. Generate reactions based on:
-   - current scenario state
-   - player choice
-   - player text input
-   - current trust / emotion / progress
-3. Branch the scenario logically.
-4. Score the player action.
-5. Return feedback that explains why the action is good, weak, or wrong.
-
-The AI should not behave like a random chatbot.
-It should behave like a controlled scenario engine.
-
----
-
-## 8. Current Branching Logic Expectation
-The scenario should branch according to player behavior.
-
-At minimum, branching should depend on:
-- whether the player verified information first
-- whether the player escalated correctly
-- whether the player showed empathy
-- whether the player chose an appropriate resolution
-- whether the player used compensation at the right time
-
-The AI customer state can change across branches such as:
-- angry
-- impatient
-- neutral
-- calmer
-- satisfied
-
-The system should also track whether the situation is:
-- not yet understood
-- verified
-- being resolved
-- escalated
-- solved
-- mishandled
+**Cài đặt (NPCOutputController.cs):**
+- Gắn vào GameObject của NPC
+- Gán `AudioSource`, `Animator`, `SkinnedMeshRenderer` (cho BlendShape)
+- Tên BlendShape miệng: `MouthOpen` (mặc định — điều chỉnh theo model)
+- Emotion triggers: `Angry`, `Happy`, `Neutral`, `Impatient`
 
 ---
 
-## 9. Current Scoring Expectation
-The system should support scoring for both modes.
+## 5. Chế Độ Gameplay
 
-### For object interaction mode
-Scoring should be more structured.
-Each action or interaction can trigger a reward or penalty rule.
+### ✅ Mode A — Speech Dialogue (Đang làm — Ưu tiên)
+Người chơi **nói bằng giọng nói** → STT → gửi text lên AI → NPC phản hồi bằng giọng + lip-sync.
 
-### For free response mode
-Scoring should be rubric-based.
-Possible evaluation criteria:
-- professionalism
-- empathy
-- correctness of handling
-- clarity of proposed solution
+### ⚠️ Mode B — Smart Object Click (FUTURE IMPLEMENTATION)
+Người chơi click vào vật thể 3D (phiếu đặt phòng, điện thoại...) → intent nghiệp vụ.
 
-The result does not need to be overly complex at first, but it must clearly show:
-- score change
-- reason for score
-- final result / feedback
+> **Lý do hoãn:** Giao diện giọng nói phức tạp hơn và cần ưu tiên hơn cho demo. Smart Object được code skeleton sẵn để implement sau.
+>
+> **Files liên quan (đã viết, chưa active):**
+> - `SmartObjectController.cs` — có header FUTURE IMPLEMENTATION
+> - `InteractionManager.cs` — đã disable trong Awake()
 
 ---
 
-## 10. Current Unity Scope
-Unity is expected to provide:
-- one hotel lobby style 3D map
-- receptionist area
-- customer NPC presence
-- clickable smart objects
-- simulator UI
-- chat / dialogue area
-- score or trust display
-- final feedback screen
+## 6. Unity Scope Hiện Tại
 
-Unity currently does **not need** to fully implement all long-term modules before the simulator demo works.
+Unity cần cung cấp:
+- Một map hotel lobby 3D
+- Khu vực quầy lễ tân
+- NPC có Animator + SkinnedMeshRenderer (cho lip-sync)
+- **Microphone input UI** (icon mic, text transcription, loading indicator)
+- **Chatbox / dialogue area** (hiển thị lịch sử hội thoại)
+- Score / trust display
+- Màn hình tổng kết sau khi kết thúc
 
----
-
-## 11. Current Backend Scope
-Backend is expected to provide:
-- scenario state handling
-- persona-based AI response
-- branching logic
-- evaluation logic
-- score calculation
-- history/runtime update
-
-Backend should be able to receive two input forms:
-1. object interaction input
-2. free-text dialogue input
+Unity **không cần** trong scope này:
+- ~~Smart Object interaction system (click vật thể)~~ → Future
+- ~~Full Asset Library UI~~ → Future
+- ~~Full Case Designer~~ → Future
 
 ---
 
-## 12. Current Priority Modules
-For the current phase, the priority is:
+## 7. Backend Scope Hiện Tại
 
-1. **Simulator**
-2. **AI Backend / State Handling**
-3. **3D Environment Interaction**
-
-The following modules are lower priority for now and may be simplified or postponed:
-- Authentication
-- Asset Library
-- AI Architect Creator
-- Full Case Designer
+Backend cần cung cấp:
+- **`POST /api/stt`** — Nhận WAV audio, trả về `{ text, language, confidence }`
+- Persona-based AI response với `audio_url` trong response
+- Phân nhánh kịch bản và chấm điểm
+- `AgentTurnResponse` phải có field `audio_url` (hoặc `audio_base64`)
+- **Đảm bảo `skip_tts = false`** được xử lý đúng (sinh TTS audio)
 
 ---
 
-## 13. Current File/Design Priority
-If generating code or task suggestions, priority should be given to:
-- simulator UI/controller
-- smart object model/state definition
-- backend request/response flow
-- object interaction system
-- scenario branching and scoring
-- one working demo case
+## 8. Priority Modules
 
-Do not optimize for the full platform first.
-Optimize for one strong demo flow first.
+| Ưu tiên | Module |
+|---------|--------|
+| 🔴 **Cao nhất** | Speech-to-Text input (`SpeechInputController.cs`) |
+| 🔴 **Cao nhất** | NPC lip-sync + audio output (`NPCOutputController.cs`) |
+| 🔴 **Cao** | AI Backend / State Handling |
+| 🔴 **Cao** | Simulator UI (chatbox, score, mic UI) |
+| 🟡 **Thấp** | Authentication |
+| ⚪ **Hoãn** | Smart Object Click, Asset Library, Case Designer |
 
----
-
-## 14. What Should Be Avoided Right Now
-At the current stage, avoid pushing the project toward unnecessary complexity such as:
-- multiple maps
-- many personas at once
-- a full production content pipeline
-- overbuilt architecture before one case works
-- redesigning the whole core system
-- spreading development equally across all modules
-
-The current expectation is **depth in one scenario**, not breadth across all features.
+> **Nguyên tắc:** Ưu tiên **chiều sâu trong 1 kịch bản hoàn chỉnh** (nói → NPC phản hồi bằng giọng), không dàn trải.
 
 ---
 
-## 15. Final Expected Outcome of This Phase
-By the end of the current phase, the project should be able to demonstrate:
-- a player standing in a 3D hotel reception context
-- an AI customer presenting a problem
-- the player solving it either by object interaction or typed dialogue
-- the AI reacting dynamically
-- the system branching and scoring the experience
-- a clear result / feedback screen at the end
+## 9. Kết Quả Mong Đợi Cuối Phase
 
-This is the current expected milestone.
-All planning, coding, prompting, and task decomposition should align with this target first.
+Demo phải thể hiện được:
+1. Người chơi đứng trong scene hotel lobby 3D
+2. Khách VIP AI xuất hiện và trình bày vấn đề (có giọng nói, NPC nhép miệng)
+3. Người chơi **nói vào microphone** → text hiện lên màn hình
+4. AI **phản hồi bằng giọng nói** + NPC nhép miệng theo
+5. Kịch bản **phân nhánh** dựa trên cách xử lý của người chơi
+6. Kết thúc → **màn hình tổng kết** với điểm và nhận xét
+
+---
+
+*Tài liệu này phản ánh scope demo thực tế. Mọi kế hoạch, code và task phân chia phải align với mục tiêu này trước.*

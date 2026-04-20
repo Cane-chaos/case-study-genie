@@ -267,7 +267,8 @@ npm run start
 ## 9. Phạm Vi Ưu Tiên Hiện Tại (Current Expected Scope)
 
 > ⚠️ Dự án **không nhắm đến full system** ở giai đoạn này.
-> Mục tiêu trước mắt là hoàn thành **một vertical slice có thể demo được**.
+> Mục tiêu trước mắt là hoàn thành **một vertical slice demo có thể chạy end-to-end**.
+> Chi tiết đầy đủ xem tại [`CURRENT_DEMO_SCOPE.md`](./CURRENT_DEMO_SCOPE.md).
 
 ### 9.1 Demo Scenario
 
@@ -275,31 +276,32 @@ npm run start
 |--------|----------|
 | **Bối cảnh** | Sảnh khách sạn / quầy lễ tân |
 | **Vai người chơi** | Nhân viên lễ tân (Receptionist) |
-| **Vai AI** | Khách VIP có vấn đề (phòng chưa sẵn sàng, đặt phòng lỗi, dịch vụ không đạt kỳ vọng...) |
-| **Mục tiêu demo** | Roleplay + quyết định xử lý tình huống + AI phân nhánh + chấm điểm |
+| **Vai AI** | Khách VIP có vấn đề (phòng chưa sẵn sàng, đặt phòng lỗi...) |
+| **Input người chơi** | 🎤 **Speech-to-Text** (giọng nói → STT API → text) |
+| **Output NPC** | 🔊 **Audio TTS + Lip-sync** (nhép miệng theo biên độ audio) |
 
-### 9.2 Hai Chế Độ Gameplay
+### 9.2 Luồng Tương Tác Chính (Core Loop)
 
-**Mode A — Guided Interaction (Tương tác vật thể):**
-- Người chơi click vào các vật thể 3D trong môi trường
-- Mỗi vật thể = một hướng xử lý / quyết định nghiệp vụ
-- Hoạt động như hệ thống trắc nghiệm ẩn bên trong mô phỏng 3D
+```
+[Người chơi nói vào mic]
+        ↓
+SpeechInputController → POST /api/stt → STTResponse { text }
+        ↓
+CaseService.SendTurn(text) → Agent Server
+        ↓
+AgentTurnResponse { npc_text, audio_url, persona_emotion }
+        ↓
+NPCOutputController → Play audio + Lip-sync + Emotion animation
+```
 
-**Mode B — Free Response (Hội thoại tự do):**
-- Người chơi tự gõ phản hồi với khách hàng AI
-- AI đánh giá câu trả lời và tiếp tục kịch bản động
-- Chấm điểm theo rubric: tính chuyên nghiệp, sự đồng cảm, độ chính xác, rõ ràng
+### 9.3 Chế Độ Gameplay
 
-### 9.3 Smart Objects — Vật Thể Có Nghĩa Nghiệp Vụ
+| Mode | Mô tả | Trạng thái |
+|------|-------|-----------|
+| **Speech Dialogue** | Người chơi nói bằng giọng nói → STT → AI phản hồi bằng giọng | ✅ Đang làm |
+| **Smart Object Click** | Click vật thể 3D → intent nghiệp vụ | ⚠️ **FUTURE IMPLEMENTATION** |
 
-| Vật thể | Intent / Hành động |
-|---------|-------------------|
-| Phiếu đặt phòng | `verify_customer_info` |
-| Máy tính quầy lễ tân | `check_room_status` |
-| Điện thoại bàn | `call_manager` / `call_housekeeping` |
-| Sách chính sách VIP | `follow_vip_policy` |
-| Voucher / bồi thường | `offer_compensation` |
-| Thẻ phòng | `reassign_room` |
+> Smart Object bị hoãn sang phiên bản sau. Code skeleton đã có (`SmartObjectController.cs`, `InteractionManager.cs`) nhưng bị disable.
 
 ### 9.4 Trạng Thái AI Khách Hàng (Branching)
 
@@ -311,13 +313,15 @@ Hệ thống theo dõi trạng thái khách theo từng hành động của ngư
 
 | Ưu tiên | Module |
 |---------|--------|
-| 🔴 **Cao** | Simulator (UI + logic) |
-| 🔴 **Cao** | AI Backend / State Handling |
-| 🔴 **Cao** | 3D Environment & Object Interaction |
-| 🟡 **Thấp** | Authentication (có thể đơn giản hóa) |
-| ⚪ **Bỏ qua** | Asset Library, Full Case Designer, Multi-map |
+| 🔴 **Cao nhất** | Speech-to-Text input (`SpeechInputController.cs`) |
+| 🔴 **Cao nhất** | NPC lip-sync + audio output (`NPCOutputController.cs`) |
+| 🔴 **Cao** | AI Backend / State Handling + STT endpoint |
+| 🔴 **Cao** | Simulator UI (chatbox, mic icon, score) |
+| 🟡 **Thấp** | Authentication |
+| ⚪ **Hoãn** | Smart Object Click, Asset Library, Case Designer |
 
-> **Nguyên tắc:** Ưu tiên **chiều sâu trong 1 kịch bản**, không dàn trải sang nhiều tính năng.
+> **Nguyên tắc:** Ưu tiên **chiều sâu trong 1 kịch bản** với trải nghiệm giọng nói hoàn chỉnh.
+
 
 ---
 

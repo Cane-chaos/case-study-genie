@@ -1,8 +1,18 @@
 using UnityEngine;
 
+// ╔══════════════════════════════════════════════════════════════╗
+// ║  ⚠️  FUTURE IMPLEMENTATION — KHÔNG DÙNG TRONG ĐỒ ÁN NÀY  ║
+// ║                                                              ║
+// ║  Tính năng bấm chọn vật thể 3D đã được ghi nhận để          ║
+// ║  phát triển sau. Trong phiên bản hiện tại, người chơi       ║
+// ║  dùng Speech-to-Text (giọng nói) làm input chính.           ║
+// ║                                                              ║
+// ║  Không xóa file này — giữ để tham khảo khi implement sau.  ║
+// ╚══════════════════════════════════════════════════════════════╝
+
 /// <summary>
-/// Gắn vào mỗi vật thể 3D có thể tương tác trong Scene.
-/// Mỗi vật thể đại diện cho một hành động nghiệp vụ (theo current_expected).
+/// [FUTURE] Gắn vào mỗi vật thể 3D có thể tương tác trong Scene.
+/// Mỗi vật thể đại diện cho một hành động nghiệp vụ.
 ///
 /// Ví dụ:
 ///   - Phiếu đặt phòng → intent: "verify_customer_info"

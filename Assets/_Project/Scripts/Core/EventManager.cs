@@ -61,25 +61,63 @@ public static class EventManager
     }
 
     // ───────────────────────────────────────────
-    // SMART OBJECT INTERACTION
+    // SPEECH-TO-TEXT (INPUT CHỦ YẾU)
     // ───────────────────────────────────────────
 
+    /// <summary>Khi người chơi bắt đầu nói (mic đang thu âm).</summary>
+    public static event Action OnSTTRecordingStarted;
+
+    /// <summary>Khi người chơi dừng nói (đang gửi lên API xử lý).</summary>
+    public static event Action OnSTTRecordingStopped;
+
     /// <summary>
-    /// Khi người chơi tương tác với vật thể thông minh.
-    /// Param 1: objectId (ví dụ: "obj_ticket_001")
-    /// Param 2: intent (ví dụ: "verify_customer_info")
+    /// Khi STT trả về kết quả text.
+    /// Param: transcribedText — câu nói đã được chuyển thành chữ.
     /// </summary>
+    public static event Action<string> OnSTTResult;
+
+    /// <summary>Khi STT gặp lỗi (micro không hoạt động, API lỗi...).</summary>
+    public static event Action<string> OnSTTError;
+
+    public static void TriggerSTTRecordingStarted()
+    {
+        Debug.Log("[EventManager] STT: Bắt đầu thu âm...");
+        OnSTTRecordingStarted?.Invoke();
+    }
+
+    public static void TriggerSTTRecordingStopped()
+    {
+        Debug.Log("[EventManager] STT: Dừng thu âm, đang xử lý...");
+        OnSTTRecordingStopped?.Invoke();
+    }
+
+    public static void TriggerSTTResult(string transcribedText)
+    {
+        Debug.Log($"[EventManager] STT Result: \"{transcribedText}\"");
+        OnSTTResult?.Invoke(transcribedText);
+    }
+
+    public static void TriggerSTTError(string error)
+    {
+        Debug.LogWarning($"[EventManager] STT Error: {error}");
+        OnSTTError?.Invoke(error);
+    }
+
+    // ───────────────────────────────────────────
+    // SMART OBJECT INTERACTION (⚠️ FUTURE IMPLEMENTATION)
+    // ───────────────────────────────────────────
+
+    /// <summary>[FUTURE] Khi người chơi click vào vật thể thông minh.</summary>
     public static event Action<string, string> OnSmartObjectInteracted;
 
-    /// <summary>Khi con trỏ hover lên một smart object.</summary>
+    /// <summary>[FUTURE] Khi con trỏ hover lên một smart object.</summary>
     public static event Action<string> OnSmartObjectHoverEnter;
 
-    /// <summary>Khi con trỏ rời khỏi smart object.</summary>
+    /// <summary>[FUTURE] Khi con trỏ rời khỏi smart object.</summary>
     public static event Action<string> OnSmartObjectHoverExit;
 
     public static void TriggerSmartObjectInteracted(string objectId, string intent)
     {
-        Debug.Log($"[EventManager] SmartObject interacted: {objectId} → {intent}");
         OnSmartObjectInteracted?.Invoke(objectId, intent);
     }
 
@@ -137,6 +175,43 @@ public static class EventManager
     {
         Debug.Log($"[EventManager] Simulation ended. Final score: {finalState.current_score}");
         OnSimulationEnded?.Invoke(finalState);
+    }
+
+    // ───────────────────────────────────────────
+    // NPC OUTPUT — LIP-SYNC & AUDIO
+    // ───────────────────────────────────────────
+
+    /// <summary>
+    /// Khi NPC bắt đầu phát âm thanh + lip-sync.
+    /// Param: audioUrl — URL file audio để tải về và phát.
+    /// </summary>
+    public static event Action<string> OnNPCSpeakStart;
+
+    /// <summary>Khi NPC đã phát xong audio + lip-sync kết thúc.</summary>
+    public static event Action OnNPCSpeakEnd;
+
+    /// <summary>
+    /// Khi NPC thay đổi cảm xúc/animation.
+    /// Param: emotionState — "angry", "neutral", "satisfied"...
+    /// </summary>
+    public static event Action<string> OnNPCEmotionChanged;
+
+    public static void TriggerNPCSpeakStart(string audioUrl)
+    {
+        Debug.Log($"[EventManager] NPC bắt đầu nói. Audio: {audioUrl}");
+        OnNPCSpeakStart?.Invoke(audioUrl);
+    }
+
+    public static void TriggerNPCSpeakEnd()
+    {
+        Debug.Log("[EventManager] NPC kết thúc nói.");
+        OnNPCSpeakEnd?.Invoke();
+    }
+
+    public static void TriggerNPCEmotionChanged(string emotionState)
+    {
+        Debug.Log($"[EventManager] NPC emotion: {emotionState}");
+        OnNPCEmotionChanged?.Invoke(emotionState);
     }
 
     // ───────────────────────────────────────────

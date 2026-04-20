@@ -203,10 +203,38 @@ public class AgentTurnResponse
     public string current_event;        // null = kết thúc simulation
     public int last_score;
 
-    // ── Mở rộng cho Unity animation ──
-    public string persona_emotion;      // "angry", "calm", "happy"
-    public string persona_action;       // "gesture_frustrated", "nod"
-    public string signal_output;        // JSON cho lip-sync/animation
+    // ── NPC Audio Output (TTS) ──
+    /// <summary>
+    /// URL file audio TTS của NPC (MP3/WAV).
+    /// Unity sẽ tải về và phát qua NPCOutputController.
+    /// </summary>
+    public string audio_url;
+
+    /// <summary>
+    /// Audio dưới dạng base64 (fallback nếu backend không serve file tĩnh).
+    /// Chỉ dùng một trong hai: audio_url hoặc audio_base64.
+    /// </summary>
+    public string audio_base64;
+
+    // ── NPC Animation / Emotion ──
+    /// <summary>Trạng thái cảm xúc NPC: "angry", "calm", "happy", "neutral"...</summary>
+    public string persona_emotion;
+
+    /// <summary>Trigger animation cụ thể: "gesture_frustrated", "nod", "point"...</summary>
+    public string persona_action;
+
+    /// <summary>
+    /// JSON signal cho lip-sync chi tiết (viseme timing).
+    /// Format phụ thuộc vào backend — có thể rỗng nếu dùng amplitude-based lip-sync.
+    /// </summary>
+    public string signal_output;
+
+    /// <summary>Nội dung lời thoại của NPC (dùng để hiển thị subtitle).</summary>
+    public string npc_text;
+
+    /// <summary>Kiểm tra xem response có audio không.</summary>
+    public bool HasAudio() =>
+        !string.IsNullOrEmpty(audio_url) || !string.IsNullOrEmpty(audio_base64);
 }
 
 // ───────────────────────────────────────────
@@ -254,4 +282,25 @@ public class SaveHistoryRequest
     public string case_id;
     public List<ChatMessage> transcript;
     public int final_score;
+}
+
+// ───────────────────────────────────────────
+// SPEECH-TO-TEXT MODELS
+// ───────────────────────────────────────────
+
+/// <summary>
+/// Response từ STT endpoint (FastAPI /api/stt).
+/// Backend nhận file audio, trả về text đã transcribe.
+/// </summary>
+[Serializable]
+public class STTResponse
+{
+    /// <summary>Câu nói đã được chuyển thành văn bản.</summary>
+    public string text;
+
+    /// <summary>Ngôn ngữ phát hiện được (ví dụ: "vi", "en").</summary>
+    public string language;
+
+    /// <summary>Độ chính xác (0.0 – 1.0), nếu backend có trả về.</summary>
+    public float confidence;
 }

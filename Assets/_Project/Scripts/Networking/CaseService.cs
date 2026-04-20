@@ -101,7 +101,7 @@ public class CaseService : MonoBehaviour
         {
             case_id = caseId,
             lazy_init = true,
-            skip_tts = true
+            skip_tts = false   // Cần TTS audio để NPCOutputController phát giọng NPC
         };
 
         Debug.Log($"[CaseService] Creating session for case: {caseId}");
