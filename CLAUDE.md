@@ -1,138 +1,144 @@
-# CLAUDE.md
+# CLAUDE.md — CDIO CaseStudy Project
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+## Project Overview
 
-## Project State
+**CDIO** = Case-Driven Interactive Operation. A training simulation platform where users role-play with an AI agent (LangGraph + GPT-4o-mini) in interactive 3D scenarios built in Unity.
 
-The old Python `casestudy/` and `api_casestudy/` packages have been removed. All active development is now in the `front-end/` directory, which is a full-stack JavaScript project (React + Express.js).
+**Demo scenario**: Retail customer service — user plays a sales associate, AI plays a frustrated customer. All UI/UX built in Unity 6 with UI Toolkit.
 
-## Development Commands
+---
 
-All commands run from `front-end/`:
+## Repository Structure
+
+```
+CaseStudy_CDIO/
+├── ARCHITECTURE.md              ← MASTER architecture document (v1.0)
+├── CaseStydy_Unity_M4/          ← Unity 6 frontend (UI Toolkit + 3D)
+│   ├── CLAUDE.md                ← Unity team guide
+│   └── Assets/_Project/
+│       ├── UI/                  ← UI Toolkit (.uxml + .uss)
+│       ├── Scripts/             ← C# logic
+│       └── Prefabs/             ← 3D prefabs (Env + Persona)
+└── (Agent API)                  ← Python FastAPI + LangGraph (separate repo by Felix)
+```
+
+---
+
+## System Architecture
+
+### 4 Services (all on MacBook Pro M4)
+
+| Port | Service | Purpose |
+|------|---------|---------|
+| 8000 | Express (Node) | Auth (login/register), case CRUD, session history — MongoDB |
+| 9000 | FastAPI (Python) | Agent API — LangGraph, WebSocket, STT/TTS |
+| 27017 | MongoDB | Data store: cases, users, sessions_history, assets |
+| — | Unity Editor | All UI/UX (replaces React) |
+
+### Architecture Diagram
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│  UNITY APP (MacBook Pro M4)                                  │
+│                                                              │
+│  ┌────────────────────────────────────────────────────────┐ │
+│  │ UI LAYER — UI Toolkit (.uxml + .uss)                   │ │
+│  │  Auth / CaseList / Case Designer / Simulation          │ │
+│  └────────────────────────────┬───────────────────────────┘ │
+│                                │                             │
+│  ┌────────────────────────────▼───────────────────────────┐ │
+│  │ CORE LAYER — C#                                        │ │
+│  │  SimulationManager, EventManager (read-only)            │ │
+│  │  ApiClient, WebSocketManager, AudioManager              │ │
+│  └────────────────────────────┬───────────────────────────┘ │
+│                                │                             │
+│  ┌────────────────────────────▼───────────────────────────┐ │
+│  │ 3D RENDERING — Unity Prefabs                           │ │
+│  │  Prefabs/Environments/  │  Prefabs/Characters/          │ │
+│  └────────────────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────────────────┘
+         │                               │
+    HTTP REST                        WebSocket
+         │                               │
+         ▼                               ▼
+┌─────────────────┐          ┌─────────────────────────┐
+│  Express 8000    │          │   Agent API 9000         │
+│  Auth + Cases    │          │   LangGraph + WebSocket  │
+│  MongoDB         │          │   STT (Whisper)          │
+└─────────────────┘          │   TTS (ElevenLabs)       │
+                              └─────────────────────────┘
+```
+
+---
+
+## Key Architecture Decisions
+
+### Case = Event Graph
+
+A case is a **directed graph of events** (nodes). Each event:
+- Has **1 env** (3D scene prefab) + **1 persona** (AI character)
+- Contains **reward criteria** for scoring
+- Has **transitions** to other events (keyword/score/action based)
+- May have **affordances** (interactive 3D objects)
+
+### Simulation Flow (Unity ↔ Agent API)
+
+1. User selects case → Unity loads case JSON from Express 8000
+2. WebSocket connects to Agent API 9000 → creates session
+3. User speaks (mic) or clicks affordance → Unity sends to Agent API
+4. Agent: STT → Semantic Extract → Evaluate Score → Generate Response → Decide Transition
+5. Agent sends response + transition signal back to Unity via WebSocket
+6. Unity: TTS playback, animate persona, load new env/prefab if transition
+7. On `isTerminal` event → save history to MongoDB → show final score
+
+---
+
+## Two Teams, Two Tracks
+
+| Team | Working On | Deliverable |
+|------|-----------|-------------|
+| **Unity UI/UX** | `CaseStydy_Unity_M4/` | Auth, CaseList, Case Designer, Simulation UI, Affordances |
+| **Agent (Felix)** | Agent API (separate repo) | LangGraph, WebSocket server, STT/TTS, prompts |
+
+**Contract**: See `ARCHITECTURE.md` Section 9 — API Contract. Two teams only communicate via this contract.
+
+---
+
+## Critical Files
+
+| File | Purpose |
+|------|---------|
+| `ARCHITECTURE.md` | **MASTER** — full system design, schema, API contract, tasks |
+| `CaseStydy_Unity_M4/CLAUDE.md` | Unity team guide |
+| `CaseStydy_Unity_M4/Assets/_Project/Scripts/Models/CaseModel.cs` | Unified C# data models |
+| `CaseStydy_Unity_M4/Assets/_Project/Scripts/Core/SimulationManager.cs` | State machine — DO NOT MODIFY |
+| `CaseStydy_Unity_M4/Assets/_Project/Scripts/Core/EventManager.cs` | Event bus — DO NOT MODIFY |
+
+---
+
+## Development
 
 ```bash
-cd front-end
+# Unity
+# Open in Unity Hub / Unity Editor — no CLI needed
 
-# Install dependencies
-npm install
+# Agent API (by Felix)
+cd agent-api && uvicorn main:app --reload --port 9000
 
-# Run Vite dev server (React, port 5173)
-npm run dev
+# Express BFF (by Felix)
+cd front-end && npm run start  # port 8000
 
-# Run Express BFF server (port 8000, hot-reload via nodemon)
-npm run start
-
-# Build for production
-npm run build
+# MongoDB
+# Ensure running on localhost:27017
 ```
 
-All three backend services must run concurrently during development: React (5173), Express BFF (8000), FastAPI (8001), and Agent Server (9000).
+---
 
-## Architecture
+## Important Notes
 
-### Multi-Process Backend
-
-```
-front-end/
-├── src/                    # React (Vite) frontend
-│   ├── App.jsx             # Router config + ProtectedRoute auth guard
-│   ├── Screen/
-│   │   ├── Auth/           # Home, Login, Register, ForgotPassword
-│   │   └── App/            # CaseList, CaseRunner, AssetStudio, EnvironmentDesigner, PersonaDesigner, User, HistoryDetail
-│   ├── components/         # NavBar, SideBar, Footer, LanguageSwitcher
-│   └── i18n.js             # i18next setup (en + vi, fallback: vi)
-└── server/                 # Express.js BFF
-    ├── index.js            # Entry point (port 8000)
-    ├── routes/             # authRoutes, userRoutes, caseRoutes, sessionRoutes
-    ├── models/             # Mongoose schemas
-    ├── middleware/         # JWT auth middleware
-    └── config/             # MongoDB connection
-```
-
-Four backend services are required:
-
-| Port | Tech | Responsibility |
-|------|------|----------------|
-| 8000 | Express (Node) | Auth (login/register), case listing, session history storage in MongoDB |
-| 8001 | FastAPI (Python) | Auth, case data retrieval, asset design agent (OpenAI GPT-4o-mini) |
-| 9000 | Agent Server | Stateful case simulation sessions (LangChain/LangGraph, traced via LangSmith) |
-| 5173 | Vite (React) | Frontend dev server |
-
-### Data Storage
-
-- **MongoDB (Mongoose)**: Users, JWT auth, session history — managed by Express (port 8000)
-- **Case data**: Served by FastAPI (port 8001) via `GET /api/cases/{caseId}` — returns `{skeleton, personas, context}`
-
-### Auth Flow
-
-JWT stored in `localStorage`. `ProtectedRoute` wrapper in `App.jsx` checks token existence and expiry (decoded client-side) before rendering protected routes. Auth endpoints exist on **both** port 8000 (Express) and port 8001 (FastAPI) — login/register goes to port 8001.
-
-### Key Screens
-
-| Screen | Route | Purpose |
-|--------|-------|---------|
-| `CaseList` | `/case-list` | Browse cases; fetches from Express `GET /api/cases` |
-| `CaseRunner` | `/case-runner/:caseId` | Chat simulation; fetches case from port 8001, runs turns via port 9000 |
-| `AssetStudio` | `/asset-studio` | Asset library; syncs from Unity via port 8001 |
-| `EnvironmentDesigner` | `/asset-studio/environment-create` | Unity 3D environment builder via WebGL bridge + agent |
-| `PersonaDesigner` | `/asset-studio/persona-create` | Avatar/character creator with voice preview |
-| `HistoryDetail` | `/history/:sessionId` | Past session transcript replay |
-| `User` | `/user` | User profile |
-
-Note: A `/case-designer` route exists in the router but renders a "Coming Soon" placeholder (ReactFlow-based visual case designer not yet built).
-
-### CaseRunner Data Flow
-
-1. `GET http://localhost:8001/api/cases/{caseId}` → `{skeleton, personas, context}`
-2. `POST http://localhost:9000/api/agent/sessions` with `{case_id, lazy_init, skip_tts}` → `{sessionId}`
-3. `POST http://localhost:9000/api/agent/sessions/{sessionId}/turn` with `{user_input}` → updated `state`
-4. On completion: `POST http://localhost:8000/api/sessions/history` to persist transcript
-
-Agent state returned each turn: `{dialogue_history, active_personas, event_summary, current_event, last_score}`. Case ends when `current_event === null` or all canon events pass evaluation.
-
-### Unity WebGL Integration
-
-`EnvironmentDesigner` and `PersonaDesigner` embed Unity via `react-unity-webgl`. Commands are sent via `sendMessage("MCP_Manager", "ExecuteCommandFromWeb", jsonString)`. The design agent (port 8001) interprets natural language prompts into structured JSON actions (`spawn_object`, `set_lighting`, `set_avatar`, etc.) using GPT-4o-mini.
-
-### Case Data Model (Skeleton Schema)
-
-- `skeleton`: Event graph — nodes with `intro_message`, `learning_objective`, `citations`, `max_turns`, `on_success`/`on_failure` transitions, `evaluation_criteria`
-- `personas`: Character list with `id`, `name`, `role`, `default_traits`, `voice_profile`, `unity_asset_key`
-- `context`: Environment info with `environment_id`, `anchor_points`, `unity_scene_key`
-
-### Planned / In-Progress
-
-Per `Task.md` and design docs:
-- **Unity MCP integration**: Agent receives spatial context (`anchor_point`, `subject_focus`, `available_affordances`) from Unity via MCP, emits `signal_output` JSON for lip-sync/animation
-- **Parallel node execution**: LangGraph multi-threading so Persona response is not blocked by Policy/Action evaluation
-- **Hotel domain**: Single-persona hotel receptionist scenario with static inline data instead of VectorDB lookups
-- **Visual case designer**: ReactFlow-based `CaseDesigner` screen (route exists, not yet built)
-
-## Environment Variables
-
-Create `front-end/.env`:
-```
-# Express BFF (port 8000)
-PORT=8000
-MONGO_URI=<mongodb connection string>
-JWT_SECRET=<secret>
-
-# FastAPI + Agent backend (port 8001)
-OPENAI_API_KEY=<key>
-OPENAI_MODEL=gpt-4o-mini
-
-# LangSmith tracing (port 9000 agent)
-LANGCHAIN_TRACING_V2=true
-LANGCHAIN_ENDPOINT=https://api.smith.langchain.com
-LANGCHAIN_API_KEY=<key>
-LANGCHAIN_PROJECT=CaseStudy
-```
-
-## Key Libraries
-
-- **react-unity-webgl**: Unity WebGL embedding and JS↔Unity messaging
-- **ReactFlow** (`reactflow`): Planned for visual case designer
-- **i18next / react-i18next**: UI internationalization (en + vi, files in `src/locales/`)
-- **Mongoose**: MongoDB ODM for Express server models
-- **react-pro-sidebar**: Sidebar navigation component
-- **Tailwind CSS**: Utility-first styling with custom primary color palette (`#1EA97C`)
+- All UI is **UI Toolkit** (`.uxml` + `.uss`), NOT uGUI
+- Unity 3D prefabs are stored locally; JSON only holds `prefabKey` strings
+- Agent API (port 9000) is built by Felix separately — Unity team tests with mock/curl
+- `SimulationManager` and `EventManager` in `Scripts/Core/` are **read-only**
+- Prefab naming: `Env_*` for environments, `Persona_*` for characters
+- Two teams work in parallel via API Contract in `ARCHITECTURE.md` Section 9
