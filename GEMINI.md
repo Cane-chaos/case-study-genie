@@ -1,74 +1,66 @@
 # 🚀 CaseStudy Agent API: Overview
 
-Welcome to the **CaseStudy Engine** Backend system. This is the central hub for coordinating authentication, case management, and realistic AI simulation.
+Chào mừng đến với hệ thống Backend của **CaseStudy Engine**. Đây là trung tâm điều phối xác thực, quản lý case và mô phỏng AI đa tác nhân (Multi-Agent).
 
 ---
 
 ## 🛠 Tech Stack
-- **Framework:** FastAPI
+- **Framework:** FastAPI, LangGraph
 - **Database:** MongoDB Atlas (Async Motor driver)
-- **Security:** JWT (JSON Web Tokens) & Bcrypt
-- **Runtime:** Python 3.12+
+- **Security:** JWT & Bcrypt
+- **Scenario:** Hotel Domain (Mr. Viktor - VIP Guest)
 
 ---
 
-## 🔑 Authentication
+## 🔑 Cấu hình Cổng (Ports)
 
-This is the sole entry point for connecting Unity to the Backend. The system uses JWT to secure sessions.
+Hệ thống chia làm hai thành phần chính:
 
-### 1. Register
-- **Endpoint:** `POST /api/register`
-- **Body:**
-  ```json
-  {
-    "email": "user@example.com",
-    "password": "yourpassword"
-  }
-  ```
-- **Note:** Passwords are encrypted with Bcrypt before being stored in MongoDB. User data is stored in the `member` collection.
-
-### 2. Login
-- **Endpoint:** `POST /api/login`
-- **Body:** Same as registration.
-- **Response:**
-  ```json
-  {
-    "access_token": "eyJhbG...",
-    "token_type": "bearer"
-  }
-  ```
-- **Note:** This token is valid for 30 days so users do not need to log in repeatedly on Unity.
+1. **Backend Auth & CMS (Port 8001)**: Xử lý đăng ký, đăng nhập và quản lý tài sản (Assets).
+2. **Agent API (Port 9000)**: Xử lý logic mô phỏng thời gian thực, WebSocket và LangGraph Multi-Agent.
 
 ---
 
 ## 🏗 Case & State Management
 
-The system supports storing entire simulation cases in flexible JSON format. For details on this data structure, please refer to: [STATE_SPEC.md](./STATE_SPEC.md).
+Dữ liệu mô phỏng được định nghĩa theo cấu trúc JSON linh hoạt, hỗ trợ Unity MCP.
+Chi tiết xem tại: [STATE_SPEC.md](./back-end/STATE_SPEC.md).
 
 ---
 
-## ⚡ How to Run the Backend
+## ⚡ Cách Chạy Backend
 
-### 1. Environment Configuration
-Create a `.env` file in the root directory with the following:
+### 1. Cấu hình Môi trường
+Tạo file `.env` trong thư mục `back-end/` với các biến sau:
 ```env
 MONGO_URI=mongodb+srv://...
 JWT_SECRET=your_jwt_secret_key
 OPENAI_API_KEY=sk-...
+ELEVENLABS_API_KEY=...
 ```
 
-### 2. Installation and Running
+### 2. Cài đặt và Khởi chạy
 ```bash
-# Install dependencies
+cd back-end
+# Cài đặt dependencies (sử dụng uv)
 uv sync
 
-# Run server
+# Chạy Backend Auth (Port 8001)
 python api_casestudy/main.py
+
+# Chạy Agent API (Port 9000 - nếu đã triển khai)
+# python api_agent/main.py
 ```
-The server will run by default at: `http://localhost:8001`
 
 ---
 
-## 🧪 Auto-Generated API Documentation (Swagger UI)
-After starting the server, you can access:
-👉 `http://localhost:8001/docs` to view and test all APIs directly in the browser.
+## 🧪 Tài liệu API (Swagger UI)
+Sau khi chạy server, truy cập:
+👉 `http://localhost:8001/docs` để xem và test các API xác thực.
+👉 `http://localhost:9000/docs` để xem các API mô phỏng (Agent).
+
+---
+
+## 📘 Tài liệu Kiến trúc
+Để hiểu sâu hơn về luồng dữ liệu và Multi-Agent workflow, tham khảo:
+[ARCHITECTURE.md](./back-end/ARCHITECTURE.md)

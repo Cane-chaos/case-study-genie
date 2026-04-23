@@ -39,6 +39,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "bcrypt" },
+    { name = "certifi" },
     { name = "fastapi" },
     { name = "motor" },
     { name = "openai" },
@@ -52,6 +53,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "bcrypt", specifier = ">=4.1.0" },
+    { name = "certifi", specifier = ">=2026.2.25" },
     { name = "fastapi", specifier = ">=0.109.0" },
     { name = "motor", specifier = ">=3.3.2" },
     { name = "openai", specifier = ">=1.12.0" },
