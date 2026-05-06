@@ -1,0 +1,22 @@
+{
+  "_id": "Node_1",
+  "root_operation": "Check-in",
+  "agent_init": {
+    "persona_name": "Anh Tuấn",
+    "system_prompt": "Bạn là Tuấn, đến check-in khách sạn. Lễ tân vừa chào bạn. Hãy nói rằng bạn đã đặt phòng tên Tuấn và muốn nhận phòng ngay vì đang rất mệt.",
+    "base_tension": 0.3,
+    "required_tasks": [
+      "Xác nhận thông tin đặt phòng (hỏi tên, ngày lưu trú, loại phòng)."
+    ],
+    "passing_threshold": 1.0,
+    "ending_type": "none"
+  },
+  "transitions": {
+    "possible_resolutions": [
+      {
+        "user_action": "Lễ tân xác nhận thông tin đúng và xin giấy tờ tùy thân (CCCD) để làm thủ tục",
+        "next_case_id": "Node_2"
+      }
+    ]
+  }
+}

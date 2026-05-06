@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Tree of Debate - Visualizer</title>
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        #mynetwork {
+            width: 100%;
+            height: 100vh;
+            border: 1px solid lightgray;
+            background-color: #1e1e1e;
+        }
+        .node-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 400px;
+            max-height: 90vh;
+            overflow-y: auto;
+            background: rgba(30, 30, 30, 0.95);
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #444;
+            display: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            z-index: 100;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1e1e1e; }
+        ::-webkit-scrollbar-thumb { background: #555; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #888; }
+    </style>
+</head>
+<body class="bg-gray-900 text-white font-sans overflow-hidden m-0 p-0 flex">
+
+    <!-- Control Panel -->
+    <div class="absolute top-4 left-4 z-50 bg-gray-800 p-4 rounded-lg shadow-lg border border-gray-700">
+        <h1 class="text-xl font-bold mb-4 text-blue-400">ToD Visualizer</h1>
+        <label class="block mb-2 text-sm text-gray-300">Chọn thư mục chứa các file JSON (ví dụ: data/check_in_Agent_1):</label>
+        <input type="file" id="filePicker" webkitdirectory directory multiple class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-500 cursor-pointer transition-colors"/>
+    </div>
+
+    <!-- Network Canvas -->
+    <div id="mynetwork"></div>
+
+    <!-- Node Details -->
+    <div id="nodeInfo" class="node-info">
+        <div class="flex justify-between items-start mb-2">
+            <h2 id="nodeId" class="text-2xl font-bold text-white break-all pr-4"></h2>
+            <button onclick="document.getElementById('nodeInfo').style.display='none'" class="text-gray-500 hover:text-white text-xl">&times;</button>
+        </div>
+        <div class="mb-4">
+            <span id="endingType" class="px-2 py-1 text-xs font-bold rounded uppercase"></span>
+        </div>
+        
+        <div class="space-y-4">
+            <div>
+                <h3 class="text-blue-400 font-semibold border-b border-gray-700 pb-1">Persona</h3>
+                <p id="persona" class="text-sm mt-1 text-gray-300 font-medium"></p>
+            </div>
+            <div>
+                <h3 class="text-blue-400 font-semibold border-b border-gray-700 pb-1">System Prompt</h3>
+                <p id="sysPrompt" class="text-sm mt-1 text-gray-300 whitespace-pre-wrap leading-relaxed"></p>
+            </div>
+            <div>
+                <h3 class="text-blue-400 font-semibold border-b border-gray-700 pb-1">Required Task (Nhiệm vụ của Lễ Tân)</h3>
+                <p id="task" class="text-sm mt-1 text-yellow-300 font-medium"></p>
+            </div>
+            <div>
+                <h3 class="text-blue-400 font-semibold border-b border-gray-700 pb-1">Debate Trace</h3>
+                <p id="trace" class="text-sm mt-1 text-gray-400 italic"></p>
+            </div>
+            <div>
+                <h3 class="text-blue-400 font-semibold border-b border-gray-700 pb-1">Possible Resolutions (Lựa chọn)</h3>
+                <ul id="resolutions" class="list-disc list-inside text-sm mt-2 text-gray-300 space-y-3"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let network = null;
+        let nodesData = new vis.DataSet();
+        let edgesData = new vis.DataSet();
+        let parsedNodes = {};
+
+        document.getElementById('filePicker').addEventListener('change', async (event) => {
+            const files = event.target.files;
+            if (files.length === 0) return;
+
+            parsedNodes = {};
+            nodesData.clear();
+            edgesData.clear();
+
+            const jsonPromises = [];
+            for (const file of files) {
+                if (file.name.endsWith('.json')) {
+                    jsonPromises.push(new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            try {
+                                const data = JSON.parse(e.target.result);
+                                parsedNodes[data._id] = data;
+                            } catch (err) {
+                                console.error("Error parsing", file.name, err);
+                            }
+                            resolve();
+                        };
+                        reader.readAsText(file);
+                    }));
+                }
+            }
+
+            await Promise.all(jsonPromises);
+            buildGraph();
+        });
+
+        function buildGraph() {
+            const nodes = [];
+            const edges = [];
+
+            for (const id in parsedNodes) {
+                const node = parsedNodes[id];
+                const ending = node.agent_init?.ending_type || 'none';
+                
+                // Styling based on ending_type and if it's root
+                let color = '#2B7CE9'; // default blue
+                let shape = 'box';
+                let level = 0;
+
+                // Simple level calculation based on underscores (assuming Root is 0, Node_X is 1, Node_X_Y is 2...)
+                if (id.includes('Root')) {
+                    color = '#F29F05'; // Orange
+                    level = 0;
+                } else {
+                    const parts = id.split('_');
+                    level = parts.length - 1; // Agent1_Node_1 -> 2
+                    
+                    if (ending === 'bad') color = '#e51c23'; // Red
+                    else if (ending === 'good') color = '#259b24'; // Green
+                    else if (level > 2) color = '#8E44AD'; // Purple for branches
+                }
+
+                nodes.push({
+                    id: id,
+                    label: id.replace('Agent1_', ''), // Simplify label
+                    color: { background: color, border: '#111' },
+                    font: { color: 'white', face: 'system-ui' },
+                    shape: shape,
+                    level: level,
+                    title: node.agent_init?.required_tasks?.[0] || 'Hover to see task' // Tooltip
+                });
+
+                // Edges
+                if (node.transitions && node.transitions.possible_resolutions) {
+                    node.transitions.possible_resolutions.forEach(res => {
+                        if (res.next_case_id) {
+                            edges.push({
+                                from: id,
+                                to: res.next_case_id,
+                                label: res.user_action ? res.user_action.substring(0, 35) + '...' : '',
+                                font: { size: 10, color: '#aaa', align: 'middle', background: '#1e1e1e' },
+                                arrows: 'to',
+                                color: { color: '#555', highlight: '#888' },
+                                smooth: { type: 'cubicBezier', forceDirection: 'vertical', roundness: 0.4 }
+                            });
+                        }
+                    });
+                }
+            }
+
+            nodesData.add(nodes);
+            edgesData.add(edges);
+
+            const container = document.getElementById('mynetwork');
+            const data = { nodes: nodesData, edges: edgesData };
+            const options = {
+                layout: {
+                    hierarchical: {
+                        direction: 'UD',
+                        sortMethod: 'directed',
+                        nodeSpacing: 350,
+                        levelSeparation: 150,
+                        parentCentralization: true
+                    }
+                },
+                physics: false,
+                interaction: {
+                    hover: true,
+                    navigationButtons: true,
+                    keyboard: true
+                }
+            };
+
+            if(network) {
+                network.destroy();
+            }
+            network = new vis.Network(container, data, options);
+
+            network.on("click", function (params) {
+                if (params.nodes.length > 0) {
+                    showNodeDetails(params.nodes[0]);
+                } else {
+                    document.getElementById('nodeInfo').style.display = 'none';
+                }
+            });
+        }
+
+        function showNodeDetails(nodeId) {
+            const node = parsedNodes[nodeId];
+            if (!node) return;
+
+            document.getElementById('nodeInfo').style.display = 'block';
+            document.getElementById('nodeId').textContent = node._id;
+            
+            const endingType = node.agent_init?.ending_type || 'none';
+            const endBadge = document.getElementById('endingType');
+            endBadge.textContent = "Ending: " + endingType;
+            if(endingType === 'bad') { endBadge.className = "px-2 py-1 text-xs font-bold rounded uppercase bg-red-600 text-white"; }
+            else if (endingType === 'good') { endBadge.className = "px-2 py-1 text-xs font-bold rounded uppercase bg-green-600 text-white"; }
+            else { endBadge.className = "px-2 py-1 text-xs font-bold rounded uppercase bg-gray-600 text-white"; }
+
+            document.getElementById('persona').textContent = node.agent_init?.persona_name || '';
+            document.getElementById('sysPrompt').textContent = node.agent_init?.system_prompt || '';
+            document.getElementById('task').textContent = (node.agent_init?.required_tasks || []).join(' | ');
+            document.getElementById('trace').textContent = (node.debate_trace || []).join(' | ');
+
+            const resList = document.getElementById('resolutions');
+            resList.innerHTML = '';
+            if (node.transitions && node.transitions.possible_resolutions && node.transitions.possible_resolutions.length > 0) {
+                node.transitions.possible_resolutions.forEach(res => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<div class="text-blue-300 font-medium">${res.user_action}</div>
+                                    <div class="text-gray-400 font-mono text-xs ml-4 mt-1">➔ ${res.next_case_id}</div>`;
+                    resList.appendChild(li);
+                });
+            } else {
+                resList.innerHTML = '<li class="text-gray-500 italic">Không có lựa chọn rẽ nhánh. Cây kết thúc tại đây.</li>';
+            }
+        }
+    </script>
+</body>
+</html>

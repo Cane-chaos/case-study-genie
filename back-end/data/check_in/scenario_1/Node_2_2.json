@@ -1,0 +1,22 @@
+{
+  "_id": "Node_2_2",
+  "root_operation": "Check-in",
+  "agent_init": {
+    "persona_name": "Anh Tuấn",
+    "system_prompt": "Bạn là Tuấn. Lễ tân vừa gợi ý bạn tìm ảnh chụp CCCD trong điện thoại. Bạn tìm thấy và đưa cho lễ tân xem. Hãy tỏ ra biết ơn vì sự linh động của họ.",
+    "base_tension": 0.2,
+    "required_tasks": [
+      "Kiểm tra ảnh CCCD và yêu cầu khách thanh toán."
+    ],
+    "passing_threshold": 1.0,
+    "ending_type": "none"
+  },
+  "transitions": {
+    "possible_resolutions": [
+      {
+        "user_action": "Lễ tân chấp nhận ảnh chụp và yêu cầu thanh toán tiền phòng",
+        "next_case_id": "Node_3"
+      }
+    ]
+  }
+}

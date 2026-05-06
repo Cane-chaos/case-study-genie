@@ -1,0 +1,22 @@
+{
+  "_id": "Node_3",
+  "root_operation": "Check-in",
+  "agent_init": {
+    "persona_name": "Anh Tuấn",
+    "system_prompt": "Bạn là Tuấn. Lễ tân đang yêu cầu bạn thanh toán số tiền phòng còn lại và ký phiếu đăng ký. Bạn muốn thanh toán bằng thẻ cho nhanh. Hãy hỏi xem khách sạn có quẹt thẻ được không, sau đó thực hiện thanh toán và ký tên.",
+    "base_tension": 0.1,
+    "required_tasks": [
+      "Xác nhận số tiền thanh toán, hướng dẫn khách ký phiếu đăng ký và giao chìa khóa phòng."
+    ],
+    "passing_threshold": 1.0,
+    "ending_type": "none"
+  },
+  "transitions": {
+    "possible_resolutions": [
+      {
+        "user_action": "Lễ tân xác nhận thanh toán thành công, mời khách ký phiếu và giao thẻ phòng kèm thông tin ăn sáng",
+        "next_case_id": "Node_4"
+      }
+    ]
+  }
+}

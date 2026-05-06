@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scenario Studio - Co-pilot</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Vis.js -->
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        #network-canvas { width: 100%; height: 100%; border: 1px solid #374151; border-radius: 0.5rem; background-color: #111827; }
+        .vis-network:focus { outline: none; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1f2937; }
+        ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+    </style>
+</head>
+<body class="bg-gray-900 text-white h-screen flex overflow-hidden text-sm" x-data="scenarioStudio()">
+
+    <!-- COLUMN 1: LEFT (2/10) - Saved Cases -->
+    <div class="w-1/5 border-r border-gray-700 flex flex-col bg-gray-800">
+        <div class="p-4 border-b border-gray-700">
+            <h2 class="text-lg font-bold text-blue-400">Projects</h2>
+            <div class="text-xs text-gray-400 mt-1">Đã chốt: <span x-text="scenarios.length"></span>/6 kịch bản</div>
+        </div>
+        <div class="flex-1 overflow-y-auto p-2 space-y-1">
+            <template x-for="(scenario, index) in scenarios" :key="index">
+                <div @click="selectScenario(index)"
+                     :class="{'bg-gray-700 border-blue-500': selectedIndex === index, 'hover:bg-gray-700 border-transparent': selectedIndex !== index}"
+                     class="p-3 rounded-lg border-l-4 cursor-pointer transition-colors flex items-center group">
+                    <svg class="w-5 h-5 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+                    <div class="flex-1 truncate">
+                        <div class="font-medium truncate text-gray-200" x-text="scenario.title || 'Kịch bản chưa đặt tên'"></div>
+                        <div class="text-xs text-gray-500 mt-0.5 truncate" x-text="scenario.persona || 'Chưa rõ nhân vật'"></div>
+                    </div>
+                </div>
+            </template>
+            <div x-show="scenarios.length === 0" class="text-center text-gray-500 mt-10">
+                Chưa có kịch bản nào. Hãy ra lệnh cho AI ở bên phải.
+            </div>
+        </div>
+        <div class="p-4 border-t border-gray-700">
+            <button @click="exportToGame()"
+                    class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg shadow-lg transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                    :disabled="scenarios.length === 0 || isExporting">
+                <svg x-show="!isExporting" class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                <svg x-show="isExporting" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                <span x-text="isExporting ? 'ĐANG EXPORT...' : 'EXPORT TO GAME'"></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- COLUMN 2: MIDDLE (5/10) - Canvas -->
+    <div class="flex-1 flex flex-col p-4">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold text-gray-100 flex items-center">
+                <svg class="w-6 h-6 mr-2 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg>
+                <span x-text="selectedScenario ? selectedScenario.title : 'Bàn vẽ (Canvas)'"></span>
+            </h2>
+            <div x-show="selectedScenario && !selectedScenario.skeleton" class="text-yellow-400 font-medium">
+                Chưa có khung xương. Bấm "Tạo Khung Xương" ở bên phải.
+            </div>
+        </div>
+        <div class="flex-1 relative">
+            <div id="network-canvas"></div>
+            <div x-show="!selectedScenario" class="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-80 rounded-lg border border-gray-700 z-10 pointer-events-none">
+                <div class="text-gray-500 text-lg flex flex-col items-center">
+                    <svg class="w-16 h-16 mb-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    Chọn một kịch bản bên trái để xem
+                </div>
+            </div>
+            <!-- Loading Overlay for Canvas -->
+            <div x-show="isGeneratingSkeleton" class="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-80 rounded-lg z-20">
+                <div class="flex flex-col items-center">
+                    <svg class="animate-spin h-10 w-10 text-indigo-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    <span class="text-indigo-300 font-medium tracking-wider">AI ĐANG VẼ CÂY...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- COLUMN 3: RIGHT (3/10) - Co-pilot Chat -->
+    <div class="w-[30%] border-l border-gray-700 bg-gray-800 flex flex-col">
+        <div class="p-4 border-b border-gray-700 bg-gray-900 flex justify-between items-center">
+            <h2 class="text-lg font-bold flex items-center text-green-400">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                Co-pilot Chat
+            </h2>
+            <div class="flex items-center space-x-2">
+                <button @click="clearChat" class="text-gray-500 hover:text-gray-300" title="Xóa lịch sử chat">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Chat History -->
+        <div class="flex-1 p-4 overflow-y-auto space-y-4" id="chat-container">
+            <template x-for="(msg, i) in chatHistory" :key="i">
+                <div :class="msg.role === 'user' ? 'flex justify-end' : 'flex justify-start'">
+                    <div :class="msg.role === 'user' ? 'bg-indigo-600 text-white rounded-tl-xl rounded-tr-xl rounded-bl-xl' : 'bg-gray-700 text-gray-200 rounded-tl-xl rounded-tr-xl rounded-br-xl'"
+                         class="max-w-[85%] px-4 py-2.5 shadow-sm whitespace-pre-wrap leading-relaxed text-[13px]">
+                        <span x-text="msg.content"></span>
+                        <div x-show="msg.type === 'action' && msg.role === 'assistant'" class="mt-2 pt-2 border-t border-gray-600 text-xs text-green-400 font-medium">
+                            <span x-text="msg.actionText"></span>
+                        </div>
+                    </div>
+                </div>
+            </template>
+            <div x-show="isChatting" class="flex justify-start">
+                <div class="bg-gray-700 px-4 py-3 rounded-tl-xl rounded-tr-xl rounded-br-xl flex space-x-1 items-center">
+                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Controls -->
+        <div class="p-3 border-t border-gray-700 bg-gray-900">
+            <!-- Context Indicator -->
+            <div class="mb-2 px-2 py-1 bg-gray-800 rounded border border-gray-700 flex items-center text-xs text-gray-400">
+                <svg class="w-3.5 h-3.5 mr-1.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Ngữ cảnh: 
+                <span class="ml-1 font-medium text-gray-300" x-text="selectedScenario ? `Đang chỉnh sửa [${selectedScenario.title || 'Case ' + (selectedIndex+1)}]` : 'Tổng quát (Chưa chọn Cây)'"></span>
+            </div>
+
+            <!-- Generate Skeleton Button (if context selected) -->
+            <div x-show="selectedScenario" class="mb-3">
+                <button @click="generateSkeleton()"
+                        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded transition-colors flex items-center justify-center shadow"
+                        :disabled="isGeneratingSkeleton || isChatting">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                    <span x-text="selectedScenario.skeleton ? 'Vẽ lại Cây' : 'Tạo Khung Xương (Skeleton)'"></span>
+                </button>
+            </div>
+
+            <form @submit.prevent="sendMessage" class="relative">
+                <textarea x-model="chatInput" 
+                          @keydown.enter.prevent="if(!$event.shiftKey) sendMessage()"
+                          class="w-full bg-gray-800 border border-gray-600 rounded-lg pl-4 pr-12 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-none overflow-hidden" 
+                          rows="2" 
+                          placeholder="Ra lệnh cho AI (VD: Đọc input.pdf và sinh 3 case...)"></textarea>
+                <button type="submit" 
+                        class="absolute right-2 bottom-2 p-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md transition-colors disabled:opacity-50"
+                        :disabled="!chatInput.trim() || isChatting || isGeneratingSkeleton">
+                    <svg class="w-4 h-4 transform rotate-90" fill="currentColor" viewBox="0 0 20 20"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path></svg>
+                </button>
+            </form>
+            <div class="mt-2 flex justify-between items-center text-[11px] text-gray-500">
+                <span>Nhấn Enter để gửi, Shift+Enter để xuống dòng</span>
+                <span>API Port: 9100</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('alpine:init', () => {
+            let networkInstance = null;
+            Alpine.data('scenarioStudio', () => ({
+                scenarios: [],
+                selectedIndex: -1,
+                chatHistory: [
+                    { role: 'assistant', content: 'Chào sếp! Tôi là Lead Scenario Designer. Sếp muốn tôi tạo kịch bản gì hôm nay? Sếp có thể bắt đầu bằng lệnh: "Sinh 5 kịch bản Check-in từ input.pdf".', type: 'text' }
+                ],
+                chatInput: '',
+                isChatting: false,
+                isGeneratingSkeleton: false,
+                isExporting: false,
+
+                get selectedScenario() {
+                    return this.selectedIndex >= 0 ? this.scenarios[this.selectedIndex] : null;
+                },
+
+                init() {
+                    // Initialize empty network
+                    this.$nextTick(() => {
+                        this.initNetwork();
+                    });
+                },
+
+                selectScenario(index) {
+                    this.selectedIndex = index;
+                    this.drawNetwork();
+                },
+
+                scrollToBottom() {
+                    this.$nextTick(() => {
+                        const container = document.getElementById('chat-container');
+                        container.scrollTop = container.scrollHeight;
+                    });
+                },
+
+                clearChat() {
+                    if(confirm("Bạn có chắc muốn xóa lịch sử chat?")) {
+                        this.chatHistory = [
+                            { role: 'assistant', content: 'Đã xóa lịch sử. Sếp cần gì tiếp theo?', type: 'text' }
+                        ];
+                    }
+                },
+
+                async sendMessage() {
+                    if (!this.chatInput.trim() || this.isChatting) return;
+                    
+                    const msg = this.chatInput;
+                    this.chatInput = '';
+                    
+                    this.chatHistory.push({ role: 'user', content: msg });
+                    this.scrollToBottom();
+                    this.isChatting = true;
+
+                    try {
+                        // Prepare context
+                        let contextPayload = { prompt: msg };
+                        if (this.selectedScenario) {
+                            contextPayload.focus_scenario_id = this.selectedScenario.scenario_id;
+                            contextPayload.focus_scenario = this.selectedScenario;
+                        }
+                        contextPayload.current_scenarios = this.scenarios;
+                        contextPayload.chat_history = this.chatHistory.slice(0, -1); // send history
+
+                        // CALL PHASE 1 API: POST /admin/analyze-scenarios
+                        const res = await fetch('http://localhost:9100/admin/analyze-scenarios', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(contextPayload)
+                        });
+
+                        if (!res.ok) throw new Error('API Error: ' + res.statusText);
+                        const data = await res.json();
+                        
+                        // Expect data to have { message: "...", scenarios: [...] }
+                        if (data.scenarios && Array.isArray(data.scenarios)) {
+                            this.scenarios = data.scenarios;
+                            if (this.selectedIndex >= this.scenarios.length) {
+                                this.selectedIndex = -1;
+                            }
+                            this.chatHistory.push({ 
+                                role: 'assistant', 
+                                content: data.message || `Đã hoàn tất! Tôi đã cập nhật danh sách ${this.scenarios.length} kịch bản ở cột bên trái. Sếp có thể bấm vào từng cái để xem và Tạo Khung Xương.`,
+                                type: 'action',
+                                actionText: `✓ Đã cập nhật ${this.scenarios.length} Scenario Briefs`
+                            });
+                        } else {
+                            this.chatHistory.push({ role: 'assistant', content: data.message || "Tôi đã hiểu, nhưng chưa có kịch bản nào được sinh ra." });
+                        }
+                    } catch (e) {
+                        this.chatHistory.push({ role: 'assistant', content: 'Lỗi kết nối Backend: ' + e.message });
+                    } finally {
+                        this.isChatting = false;
+                        this.scrollToBottom();
+                    }
+                },
+
+                async generateSkeleton() {
+                    if (!this.selectedScenario || this.isGeneratingSkeleton) return;
+                    
+                    this.isGeneratingSkeleton = true;
+                    this.chatHistory.push({ role: 'assistant', content: `Đang vẽ Khung Xương (Skeleton) cho kịch bản: **${this.selectedScenario.title}**...`, type: 'text' });
+                    this.scrollToBottom();
+
+                    try {
+                        // CALL PHASE 2 API: POST /admin/generate-skeletons
+                        const res = await fetch('http://localhost:9100/admin/generate-skeletons', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ scenarios: [this.selectedScenario] })
+                        });
+
+                        if (!res.ok) throw new Error('API Error: ' + res.statusText);
+                        const data = await res.json();
+                        
+                        // Expect data to have map of scenario_id -> []SkeletonNode
+                        const skeletonsMap = data.skeletons || {};
+                        const sId = this.selectedScenario.scenario_id;
+                        
+                        if (skeletonsMap[sId]) {
+                            // Update the scenario object with the skeleton
+                            this.selectedScenario.skeleton = skeletonsMap[sId];
+                            this.drawNetwork();
+                            
+                            this.chatHistory.push({ 
+                                role: 'assistant', 
+                                content: `Khung xương cho [${this.selectedScenario.title}] đã vẽ xong với ${this.selectedScenario.skeleton.length} nodes! Sếp thấy sao?`,
+                                type: 'action',
+                                actionText: `✓ Đã vẽ Cây (${this.selectedScenario.skeleton.length} nodes)`
+                            });
+                        } else {
+                            throw new Error("Không nhận được dữ liệu Khung xương từ Server.");
+                        }
+
+                    } catch (e) {
+                        this.chatHistory.push({ role: 'assistant', content: 'Lỗi vẽ cây: ' + e.message });
+                    } finally {
+                        this.isGeneratingSkeleton = false;
+                        this.scrollToBottom();
+                    }
+                },
+
+                async exportToGame() {
+                    if (this.scenarios.length === 0 || this.isExporting) return;
+                    if(!confirm(`Xác nhận đắp thịt và Export ${this.scenarios.length} kịch bản này vào Game? Hành động này sẽ gọi Agent và sinh file JSON thực tế.`)) return;
+
+                    this.isExporting = true;
+                    this.chatHistory.push({ role: 'assistant', content: `BẮT ĐẦU QUÁ TRÌNH EXPORT TO GAME...\nĐang đắp da thịt cho ${this.scenarios.length} kịch bản. Quá trình này có thể mất vài phút.`, type: 'text' });
+                    this.scrollToBottom();
+
+                    try {
+                        // Gather all skeletons
+                        let skeletonsMap = {};
+                        for (let s of this.scenarios) {
+                            if (!s.skeleton) {
+                                throw new Error(`Kịch bản "${s.title}" chưa được vẽ Khung Xương. Hãy vẽ Khung xương cho tất cả trước khi Export!`);
+                            }
+                            skeletonsMap[s.scenario_id] = s.skeleton;
+                        }
+
+                        // CALL PHASE 3 API: POST /admin/refine-cases
+                        const res = await fetch('http://localhost:9100/admin/refine-cases', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ 
+                                operation: this.scenarios[0].business_goal,
+                                skeletons: skeletonsMap 
+                            })
+                        });
+
+                        if (!res.ok) throw new Error('API Error: ' + res.statusText);
+                        const data = await res.json();
+                        
+                        this.chatHistory.push({ 
+                            role: 'assistant', 
+                            content: `Xuất xưởng thành công! Đã ghi ${data.total_saved} files vào thư mục backend/data. Các Unity Agents đã sẵn sàng!`,
+                            type: 'action',
+                            actionText: `🚀 EXPORT THÀNH CÔNG`
+                        });
+                    } catch (e) {
+                        this.chatHistory.push({ role: 'assistant', content: 'Lỗi Export: ' + e.message });
+                    } finally {
+                        this.isExporting = false;
+                        this.scrollToBottom();
+                    }
+                },
+
+                // -----------------------
+                // VIS.JS NETWORK RENDERER
+                // -----------------------
+                initNetwork() {
+                    const container = document.getElementById('network-canvas');
+                    const options = {
+                        layout: { hierarchical: { direction: 'UD', sortMethod: 'directed', levelSeparation: 150, nodeSpacing: 250 } },
+                        physics: { enabled: false },
+                        nodes: { shape: 'box', margin: 10, font: { color: '#ffffff', face: 'Inter, sans-serif' }, borderWidth: 2, borderRadius: 8 },
+                        edges: { font: { align: 'horizontal', color: '#9ca3af', background: '#1f2937', strokeWidth: 0 }, color: { color: '#4b5563', highlight: '#818cf8' }, smooth: { type: 'cubicBezier' }, arrows: { to: { enabled: true, scaleFactor: 0.8 } } },
+                        interaction: { hover: true, tooltipDelay: 200 }
+                    };
+                    networkInstance = new vis.Network(container, { nodes: [], edges: [] }, options);
+                },
+
+                drawNetwork() {
+                    if (!this.selectedScenario || !this.selectedScenario.skeleton || !networkInstance) {
+                        if (networkInstance) networkInstance.setData({ nodes: [], edges: [] });
+                        return;
+                    }
+
+                    const rawNodes = this.selectedScenario.skeleton;
+                    let nodes = [];
+                    let edges = [];
+
+                    rawNodes.forEach(rn => {
+                        let isBad = rn.ending_type === 'bad';
+                        let isGood = rn.ending_type === 'good';
+                        
+                        let bgColor = '#374151'; // default gray
+                        let borderColor = '#4b5563';
+                        if (isBad) { bgColor = '#7f1d1d'; borderColor = '#ef4444'; }
+                        else if (isGood) { bgColor = '#14532d'; borderColor = '#22c55e'; }
+                        else if (rn.parent_id === 'root') { bgColor = '#312e81'; borderColor = '#6366f1'; }
+
+                        let tasks = Array.isArray(rn.required_tasks) ? rn.required_tasks.join('\n') : '';
+                        let label = `ID: ${rn.node_id}\n\nTasks:\n${tasks}\n\nType: ${rn.ending_type || 'none'}`;
+
+                        nodes.push({
+                            id: rn.node_id,
+                            label: label,
+                            title: `Situation: ${rn.situation}\nPersona: ${rn.persona}`,
+                            color: { background: bgColor, border: borderColor, highlight: { background: bgColor, border: '#ffffff' } }
+                        });
+
+                        if (rn.possible_resolutions && Array.isArray(rn.possible_resolutions)) {
+                            rn.possible_resolutions.forEach(res => {
+                                edges.push({
+                                    from: rn.node_id,
+                                    to: res.next_node_id,
+                                    label: res.user_action,
+                                    title: `Hành động: ${res.user_action}`
+                                });
+                            });
+                        }
+                    });
+
+                    networkInstance.setData({ nodes: new vis.DataSet(nodes), edges: new vis.DataSet(edges) });
+                    networkInstance.fit({ animation: true });
+                }
+            }));
+        });
+    </script>
+</body>
+</html>

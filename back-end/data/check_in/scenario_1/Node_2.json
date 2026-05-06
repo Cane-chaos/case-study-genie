@@ -1,0 +1,30 @@
+{
+  "_id": "Node_2",
+  "root_operation": "Check-in",
+  "agent_init": {
+    "persona_name": "Anh Tuấn",
+    "system_prompt": "Bạn là Tuấn. Lễ tân vừa yêu cầu CCCD. Bạn tìm trong ví và hốt hoảng nhận ra mình đã để quên thẻ CCCD ở nhà. Hãy tỏ ra lo lắng, nài nỉ lễ tân xem có cách nào khác không vì bạn đang rất mệt và không thể quay về lấy.",
+    "base_tension": 0.6,
+    "required_tasks": [
+      "Xử lý tình huống khách quên CCCD cứng theo quy định linh hoạt của khách sạn."
+    ],
+    "passing_threshold": 1.0,
+    "ending_type": "none"
+  },
+  "transitions": {
+    "possible_resolutions": [
+      {
+        "user_action": "Lễ tân linh động yêu cầu khách dùng ứng dụng VNeID thay thế",
+        "next_case_id": "Node_2_1"
+      },
+      {
+        "user_action": "Lễ tân gợi ý khách dùng ảnh chụp CCCD lưu trên điện thoại",
+        "next_case_id": "Node_2_2"
+      },
+      {
+        "user_action": "Lễ tân từ chối, bắt buộc phải có CCCD cứng mới cho check-in",
+        "next_case_id": "Node_2_3"
+      }
+    ]
+  }
+}

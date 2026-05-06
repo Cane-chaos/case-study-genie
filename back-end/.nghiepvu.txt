@@ -1,0 +1,180 @@
+NGHIỆP VỤ NHẬN ĐẶT BUỒNG
+Nhận đặt buồng cho khách lẻ:
+
+Quy trình
+Bước 1: Chào khách
+Good morning/afternoon/evening. Duy Tan hotel. Reception department. John
+speaking. How may I help you?
+Bước 2: Tiếp nhận yêu cầu đặt buồng của khách
+1. Anh/chị vui lòng cho biết họ tên ạ?
+2. Anh/chị sẽ lưu trú từ ngày nào đến ngày nào ạ?
+3. Anh/chị đi bao nhiêu người và đặt bao nhiêu phòng ạ?
+Bước 3: Kiểm tra khả năng đáp ứng
+Thông báo với anh/chị, khách sạn còn 3 hạng phòng như sau: phòng Standard có giá
+là 1 triệu đồng, phòng Superior có giá là 1 triệu 500 nghìn đồng, phòng Deluxe có
+giá là 2 triệu đồng. Anh/chị muốn chọn hạng phòng nào để lưu trú ạ?
+Bước 4: Tiếp nhận các thông tin đặt buồng chi tiết
+1. Anh/chị là khách lưu trú chính hay đặt cho ai ạ?
+2. Để tiện cho việc liên lạc, anh/chị cho em xin SĐT và địa chỉ email ạ.
+3. Bên em có 3 hình thức thanh toán: tiền mặt, chuyển khoản và thẻ tín dụng.
+Anh/chị sẽ thanh toán bằng hình thức nào ạ?
+4. Có 2 hình thức đặt phòng là đảm bảo và không đảm bảo. Anh/chị muốn đặt
+phòng theo hình thức nào ạ? Để đặt phòng đảm bảo, anh/chị vui lòng chuyển khoản
+trước cho khách sạn số tiền là …… triệu đồng nhé.
+5. Ngoài ra, khách sạn có dịch vụ xe đưa đón từ sân bay đến khách sạn với giá 150
+nghìn đồng/lượt. Anh/chị có muốn sử dụng dịch vụ này không ạ?
+Bước 5: Xác nhận lại thông tin
+Anh/chị là …… sẽ lưu trú từ ngày …… đến ngày …… Anh/chị đặt …… phòng dành
+cho …… người, loại …… SĐT của anh/chị là …… và email là …… Anh/chị sẽ
+thanh toán bằng tiền mặt và chọn hình thức đặt phòng có đảm bảo. Ngoài ra, anh/chị
+có sử dụng dịch vụ xe đưa đón với số hiệu chuyến bay là …… đón vào lúc …… Như
+vậy có đúng không ạ?
+1
+
+Bước 6: Kết thúc đặt buồng
+Em có thể giúp gì thêm cho anh/chị được nữa không ạ? Cám ơn anh/chị lựa chọn
+khách sạn Duy Tân, mong sớm được gặp và phục vụ anh/chị vào ngày …… Chào
+anh/chị.
+
+NGHIỆP VỤ ĐĂNG KÝ KHÁCH SẠN CHO KHÁCH LẺ
+(CHECK-IN)
+Đăng ký khách sạn (Check-in) đối với khách lẻ đã đặt buồng:
+Quy trình
+Bước 1: Chào khách và gợi ý giúp đỡ
+Chào mừng quý khách đến với khách sạn. Em có thể giúp gì được cho quý khách?
+Bước 2: Tiếp nhận yêu cầu đăng ký khách sạn
+1. Anh/chị đã đặt phòng trước chưa ạ?
+2. Cho em xin họ tên và mã số đặt phòng ạ.
+3. Em xin xác nhận lại thông tin: anh/chị là …… lưu trú từ hôm nay ngày …… đến
+ngày …… Anh/chị đặt …… phòng dành cho …… người, loại …… Tổng tiền
+phòng của anh/chị là …… và đã đặt cọc trước …… đồng. Như vậy có đúng không
+ạ?
+Bước 3: Đăng ký khách sạn
+1. Anh/chị vui lòng cung cấp CCCD ạ.
+2. Anh/chị vui lòng thanh toán số tiền còn lại là …… triệu nhé.
+3. Đây là phiếu đăng ký khách sạn, anh/chị đọc lại thông tin trên phiếu và ký xác
+nhận vào đây nhé.
+Bước 4: Giao chìa khóa
+Đây là thẻ chìa khoá, bên trong có chìa khoá phòng và số phòng của anh/chị là ……
+Giá phòng đã bao gồm ăn sáng tại nhà hàng nằm ở tầng 2 phục vụ từ 6h-9h ạ.
+Bước 5: Giới thiệu các dịch vụ khác
+Ngoài ra, nếu anh/chị muốn sử dụng dịch vụ nào có thể liên hệ với lễ tân thông qua
+SĐT là 001 nhé.
+2
+
+Bước 6: Giới thiệu nhân viên hành lý
+- Đây là anh Henry sẽ giúp anh/chị mang hành lý lên phòng.
+- Em có thể giúp gì thêm cho anh/chị được nữa không ạ? Chúc anh/chị có một kỳ
+nghỉ vui vẻ tại khách sạn. Mời anh/chị lên phòng.
+Bước 7: Hoàn thiện hồ sơ đăng ký
+
+NGHIỆP VỤ PHỤC VỤ KHÁCH LƯU TRÚ
+a) Tiếp nhận và xử lý yêu cầu báo thức:
+Quy trình
+Bước 1: Chào và gợi ý giúp đỡ
+Chào anh/chị, em có thể giúp gì được cho anh/chị?
+Bước 2: Tiếp nhận yêu cầu báo thức của khách
+1. Cho em xin họ tên và số phòng lưu trú ạ.
+2. Anh/chị muốn báo thức vào thời gian nào ạ?
+- Bên em có 3 hình thức báo thức: trực tiếp, điện thoại và chuông tự động. Anh/chị
+muốn chọn hình thứz nào ạ?
+3. Anh/chị có muốn ăn sáng tại phòng để tiện hơn cho mình không ạ?
+- Bên em có mỳ quảng và phở, anh/chị muốn chọn món nào, vào lúc mấy giờ ạ?
+- Sáng mai anh/chị có đi đâu không để em đặt xe trước?
+- Anh/chị muốn xe 4 hay 7 chỗ, vào lúc mấy giờ ạ?
+- Em xin xác nhận lại thông tin: Anh/chị là …… lưu trú tại phòng …… muốn báo
+thức vào …… giờ sáng, ngày …… với hình thức báo thức là …… Anh/chị có đặt
+thêm ăn sáng tại phòng với món …… lúc …… và xe taxi …… chỗ, lúc …… Như vậy
+có đúng không ạ?
+Bước 3: Kết thúc
+- Em có thể giúp gì thêm cho anh/chị được nữa không ạ?
+- Cám ơn anh/chị đã sử dụng dịch vụ, chúc anh/chị một ngày tốt lành.
+b) Quy đổi ngoại tệ:
+3
+
+Quy trình
+Bước 1: Chào và gợi ý giúp đỡ
+Chào anh/chị, em có thể giúp gì được cho anh/chị?
+Bước 2: Tiếp nhận yêu cầu đổi ngoại tệ
+1. Cho em xin họ tên và số phòng lưu trú ạ.
+2. Anh/chị muốn đổi loại tiền gì và đổi bao nhiêu ạ?
+3. Hiện tại, 1 đô la Mỹ đổi được 28.000 đồng. Không biết anh/chị có muốn đổi không?
+Bước 3: Thực hiện quy đổi
+1. Anh/chị đổi 100 đô, vậy anh/chị sẽ nhận được …… triệu đồng nhé.
+2. Cho em xin 100 đô ạ.
+3. Đây là phiếu quy đổi ngoại tệ, anh/chị vui lòng đọc lại thông tin và ký xác nhận vào
+đây giúp em.
+4. Em gửi tiền quy đổi là …… triệu đồng, anh/chị vui lòng kiểm tra lại giúp em.
+Bước 4: Kết thúc quy trình
+Em có thể giúp gì thêm cho anh/chị được nữa không ạ? Cám ơn anh/chị đã sử dụng
+dịch vụ tại khách sạn, chúc anh/chị một ngày tốt lành.
+c) Xử lý phàn nàn kết hợp chuyển buồng:
+Tình huống: Điều hoà trong phòng khách không mát và có hiện tượng gỉ nước, khách
+phàn nàn yêu cầu khách sạn sửa chữa. Nhưng sau khi sửa vẫn hỏng, khách sạn phải
+chuyển phòng khác cho khách.
+Quy trình
+0. Em chào anh/chị, em có thể giúp gì cho anh/chị được không ạ?
+1. Anh/chị có thể cho em biết họ tên và số phòng mình đang lưu trú được không ạ?
+2. Điều hoà phòng anh/chị có vấn đề gì vậy ạ?
+3. Em xin lỗi việc này đã làm ảnh hưởng đến thời gian lưu trú của anh/chị. Anh/chị
+vui lòng nán lại trong giây lát, em sẽ gọi cho bộ phận Kỹ thuật sửa ngay bây giờ cho
+anh/chị ạ.
+4. Chào Kỹ thuật, em là John lễ tân. Khách phòng số 201 báo điều hoà bị hỏng kèm
+gỉ nước, anh vui lòng sửa ngay bây giờ giúp em nhé.
+4
+
+5. Anh/chị vui lòng đợi khoảng 15-20 phút. Mời anh/chị ngồi tại ghế sofa, sẽ có bánh
+và nước phục vụ miễn phí cho anh/chị ạ.
+6. Điều hoà của anh/chị đã được sửa xong, em mời anh/chị về phòng để kiểm tra. Một
+lần nữa em xin lỗi và cám ơn anh/chị đã đóng góp ý kiến để khách sạn cải thiện chất
+lượng dịch vụ vào lần sau.
+7. Gọi lên phòng khách: Em chào anh/chị, em là John ở bộ phận lễ tân. Điều hoà đã
+hoạt động tốt chưa ạ? (Vẫn hỏng lại)
+8. Em xin lỗi và bây giờ, em mời anh/chị xuống quầy lễ tân để em làm thủ tục chuyển
+phòng cho anh/chị ạ.
+9. Anh/chị muốn chuyển phòng ngang hạng hay cao hạng hơn ạ? Vậy em chuyển cho
+anh/chị từ phòng 201 sang phòng 301 nhé.
+10. Đây là phiếu chuyển phòng, anh/chị đọc toàn bộ thông tin trên phiếu và ký xác
+nhận vào đây giúp em.
+11. Anh/chị muốn chuyển phòng bây giờ hay khi nào ạ? Vậy em mời anh/chị về phòng
+chuẩn bị hành lý, sẽ có nhân viên lên hỗ trợ anh/chị chuyển phòng.
+12. Chào Housekeeping, em là John lễ tân. Khách phòng 201 chuyển sang phòng 301.
+13. Lễ tân gọi bell, vui lòng cử một người đến quầy hỗ trợ khách chuyển phòng.
+Đây là chìa khoá phòng 301, anh vui lòng hỗ trợ khách chuyển từ phòng 201 sang
+phòng 301 và nhớ lấy lại chìa khoá cũ giúp em nhé.
+14. Gọi lên phòng khách: Chào anh/chị, em là John lễ tân. Anh/chị có hài lòng về
+phòng mới không ạ?
+- Em có thể giúp gì thêm cho anh/chị được nữa không ạ? Chúc anh/chị một ngày tốt
+lành.
+
+NGHIỆP VỤ THANH TOÁN VÀ TIỄN KHÁCH
+(CHECK-OUT)
+Quy trình
+Bước 1: Chào khách và gợi ý giúp đỡ
+Chào anh/chị, có phải anh/chị thanh toán trả phòng phải không ạ?
+5
+
+Bước 2: Tiếp nhận yêu cầu
+1. Cho em xin họ tên và số phòng lưu trú ạ?
+2. Em xác nhận lại thông tin như sau, anh/chị là … lưu trú tại phòng 301. Hôm nay
+anh/chị làm thủ tục check-out, tổng tiền phòng là … triệu đồng và anh/chị đã thanh toán
+toàn bộ rồi. Như vậy có đúng không ạ?
+Bước 3: Làm thủ tục thanh toán
+1. Chào Housekeeping, em là John lễ tân. Khách phòng 301 đang check out.
+2. Từ tối hôm qua đến sáng hôm nay, anh/chị có dùng gì trong minibar không ạ?
+3. Mỗi chai nước có giá 20.000 đồng. Anh/chị dùng 2 chai vui lòng thanh toán 40.000
+đồng ạ.
+4. Đây là hóa đơn tổng hợp, vui lòng kiểm tra toàn bộ thông tin và ký xác nhận vào đây
+nhé.
+Bước 4: Kết thúc thanh toán
+1. Cho em xin lại chìa khoá phòng ạ.
+2. Trong suốt thời gian lưu trú, anh/chị có hài lòng với dịch vụ của khách sạn không ạ?
+3. Bây giờ anh/chị đi đâu để em gọi xe giúp ạ?
+4. Giới thiệu với anh/chị đây là anh Henry nhân viên hành lý, sẽ giúp anh/chị mang
+hành lý ra xe.
+5. Cám ơn anh/chị đã lựa chọn khách sạn Duy Tân. Chúc anh/chị có một chuyến đi tốt
+đẹp và hẹn gặp lại anh/chị vào lần sau.
+
+6
+
+

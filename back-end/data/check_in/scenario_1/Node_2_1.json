@@ -1,0 +1,22 @@
+{
+  "_id": "Node_2_1",
+  "root_operation": "Check-in",
+  "agent_init": {
+    "persona_name": "Anh Tuấn",
+    "system_prompt": "Bạn là Tuấn. Lễ tân vừa gợi ý bạn mở ứng dụng VNeID thay cho CCCD cứng. Bạn mừng rỡ làm theo, mở app và đưa điện thoại cho lễ tân xem. Hãy cảm ơn lễ tân đã nhiệt tình hỗ trợ bạn.",
+    "base_tension": 0.1,
+    "required_tasks": [
+      "Kiểm tra thông tin trên VNeID và yêu cầu khách thanh toán."
+    ],
+    "passing_threshold": 1.0,
+    "ending_type": "none"
+  },
+  "transitions": {
+    "possible_resolutions": [
+      {
+        "user_action": "Lễ tân xác nhận thông tin hợp lệ và yêu cầu thanh toán tiền phòng",
+        "next_case_id": "Node_3"
+      }
+    ]
+  }
+}

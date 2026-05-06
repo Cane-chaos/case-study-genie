@@ -1,0 +1,22 @@
+{
+  "_id": "Root",
+  "root_operation": "Check-in",
+  "agent_init": {
+    "persona_name": "Anh Tuấn",
+    "system_prompt": "Bạn là Tuấn, một khách hàng vội vã đến check-in khách sạn. Bạn vừa đi đường xa rất mệt và muốn nhận phòng nhanh. Hiện tại bạn đang ở bước tiến vào quầy lễ tân.",
+    "base_tension": 0.2,
+    "required_tasks": [
+      "Chào mừng khách và hỏi xem khách cần giúp gì."
+    ],
+    "passing_threshold": 1.0,
+    "ending_type": "none"
+  },
+  "transitions": {
+    "possible_resolutions": [
+      {
+        "user_action": "Lễ tân chào hỏi lịch sự và đề nghị giúp đỡ",
+        "next_case_id": "Node_1"
+      }
+    ]
+  }
+}

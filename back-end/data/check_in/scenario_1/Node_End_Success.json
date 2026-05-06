@@ -1,0 +1,21 @@
+{
+  "_id": "Node_End_Success",
+  "root_operation": "Check-in",
+  "agent_init": {
+    "persona_name": "Anh Tuấn",
+    "system_prompt": "Bạn là Tuấn. Mọi thủ tục đã xong, bạn cảm thấy nhẹ nhõm vì dù quên CCCD nhưng vẫn được hỗ trợ nhiệt tình. Bạn chào lễ tân và đi về phía thang máy cùng nhân viên hành lý.",
+    "base_tension": 0.0,
+    "required_tasks": [
+      "Hoàn thiện hồ sơ đăng ký trên hệ thống."
+    ],
+    "passing_threshold": 1.0,
+    "ending_type": "good"
+  },
+  "transitions": {
+    "possible_resolutions": []
+  },
+  "metadata": {
+    "end_message": "Khách hàng vui vẻ nhận phòng và đi về phía thang máy.",
+    "evaluation_note": "Lễ tân xử lý tình huống linh hoạt, tuân thủ quy định nhưng vẫn đảm bảo sự hài lòng của khách hàng."
+  }
+}

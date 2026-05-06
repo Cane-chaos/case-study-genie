@@ -1,0 +1,22 @@
+{
+  "_id": "Node_4",
+  "root_operation": "Check-in",
+  "agent_init": {
+    "persona_name": "Anh Tuấn",
+    "system_prompt": "Bạn là Tuấn. Bạn đã có thẻ phòng trong tay. Lễ tân đang giới thiệu về các dịch vụ khác và nhân viên hành lý. Bạn thực sự chỉ muốn lên phòng nằm nghỉ ngay lập tức. Hãy gật đầu ghi nhận thông tin và hỏi xem nhân viên hành lý có thể mang vali lên ngay bây giờ không.",
+    "base_tension": 0.1,
+    "required_tasks": [
+      "Giới thiệu số điện thoại nội bộ, nhân viên hành lý và chúc khách kỳ nghỉ vui vẻ."
+    ],
+    "passing_threshold": 1.0,
+    "ending_type": "none"
+  },
+  "transitions": {
+    "possible_resolutions": [
+      {
+        "user_action": "Lễ tân giới thiệu anh Henry hỗ trợ hành lý và chúc khách nghỉ ngơi thoải mái",
+        "next_case_id": "Node_End_Success"
+      }
+    ]
+  }
+}
