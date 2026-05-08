@@ -11,6 +11,7 @@ from openai import OpenAI
 from api_agent.dependencies.deps import get_state_loader
 from api_agent.services.state_loader import StateLoader
 from api_agent.services.game_agent import game_app
+from api_agent.services.scoring_service import evaluate_session
 
 router = APIRouter(prefix="/game", tags=["Game"])
 
@@ -334,3 +335,13 @@ async def game_voice_ws(websocket: WebSocket):
                 await websocket.send_json({"type": "error", "message": f"Unknown event type: {event_type}"})
     except WebSocketDisconnect:
         return
+
+@router.get("/score")
+async def get_game_score(session_id: str = Query(..., description="ID của session để chấm điểm")):
+    """
+    Chấm điểm toàn diện cho phiên chơi dựa trên lịch sử LangGraph (chỉ gọi khi game đã kết thúc).
+    """
+    result = evaluate_session(session_id)
+    if "error" in result:
+        raise HTTPException(status_code=400, detail=result["error"])
+    return result

@@ -8,7 +8,7 @@ Chủ đề của bạn là: {theme}
 Nếu có "Quy trình chuẩn / Ngữ cảnh tham chiếu" được cung cấp, bạn BẮT BUỘC phải bám sát vào các bước trong quy trình đó để thiết kế Trục chính.
 
 Yêu cầu CỰC KỲ QUAN TRỌNG về Cấu trúc Cây và Đặt tên ID (Nếu làm sai sẽ bị phạt):
-1. Ý Nghĩa Của Chủ Đề (Theme): Chủ đề quy định TÍNH CÁCH (Persona) và SỰ CỐ CHÍNH của toàn bộ cây này. Nếu chủ đề là "Quên CCCD", thì Persona phải là "Khách quên mang CCCD" ngay từ Node đầu tiên! Trục chính của cây này chính là hành trình giải quyết sự cố đó. Đừng tạo một "Happy Path" ảo tưởng khách có CCCD, rồi mới rẽ nhánh quên CCCD!
+1. Ý Nghĩa Của Chủ Đề (Theme): Chủ đề quy định TÍNH CÁCH (Persona) và SỰ CỐ CHÍNH của toàn bộ cây này. Nếu chủ đề là "Quên CCCD", thì Persona phải là "Khách [Họ và tên do bạn tự đặt], quên mang CCCD" ngay từ Node đầu tiên! Trục chính của cây này chính là hành trình giải quyết sự cố đó. Đừng tạo một "Happy Path" ảo tưởng khách có CCCD, rồi mới rẽ nhánh quên CCCD!
 2. Quy tắc Đặt tên ID KẾT CẤU (Tuyệt đối tuân thủ):
    - Node Khởi đầu (Tầng 1): BẮT BUỘC là `Root`.
    - TRỤC CHÍNH (Chuyển cảnh/Task tiếp theo): Khi tiến sang bước tiếp theo trong quy trình (VD: Xong bước Chào hỏi -> Chuyển sang bước Xin thông tin -> Chuyển sang bước Xin CCCD), ID phải tăng dần theo số nguyên: `Node_1`, `Node_2`, `Node_3`... 
@@ -98,9 +98,11 @@ Bạn CHỈ được phép in ra JSON hợp lệ khớp với cấu trúc sau (k
 }
 """
 
-DOCUMENT_PARSER_PROMPT = """Bạn là một trợ lý AI thông minh.
-Nhiệm vụ của bạn là đọc một tài liệu văn bản (được trích xuất từ PDF) và trích xuất ra CHÍNH XÁC danh sách các nghiệp vụ cốt lõi được đề cập.
-Tài liệu này chỉ có đúng 2 nghiệp vụ. Hãy tìm và trích xuất tên 2 nghiệp vụ đó bằng TIẾNG VIỆT.
-CHỈ in ra một mảng JSON hợp lệ chứa các chuỗi (string) tên nghiệp vụ. Không bao gồm các định dạng markdown như ```json.
-Ví dụ output: ["Khách lẻ có đặt phòng trước", "Khách lẻ Walk-in"]
+DOCUMENT_PARSER_PROMPT = """Bạn là một chuyên gia phân tích tài liệu (Document Parser).
+Nhiệm vụ của bạn là trích xuất các quy trình/nghiệp vụ chính từ văn bản được cung cấp.
+Chỉ trả về một mảng JSON chứa các chuỗi tên nghiệp vụ.
+Ví dụ:
+["Check-in cho khách lẻ", "Check-out cho khách đoàn"]
+Tuyệt đối KHÔNG có markdown hay text giải thích bên ngoài.
 """
+
