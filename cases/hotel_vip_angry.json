@@ -1,0 +1,93 @@
+{
+  "case_metadata": {
+    "case_id": "hotel_vip_angry_001",
+    "title": "Khách VIP tức giận vì phòng chưa sẵn sàng",
+    "difficulty": "Medium",
+    "category": "Hospitality"
+  },
+  "environment": {
+    "scene_id": "env_hotel_lobby_luxury",
+    "smart_objects": [
+      {
+        "id": "obj_booking_form",
+        "name": "Phiếu đặt phòng",
+        "position": [1.2, 0.8, -0.5],
+        "is_required": true
+      },
+      {
+        "id": "obj_phone",
+        "name": "Điện thoại lễ tân",
+        "position": [0.4, 0.8, 0.1],
+        "is_required": false
+      }
+    ]
+  },
+  "persona": {
+    "name": "Mr. Viktor",
+    "prefab_id": "char_viktor_v3",
+    "traits": [
+      "Nóng tính",
+      "Coi trọng thời gian",
+      "Yêu cầu dịch vụ chuyên nghiệp",
+      "Không thích bị đổ lỗi"
+    ],
+    "voice_style": "Trầm, dứt khoát, hơi căng thẳng",
+    "initial_trust": 40,
+    "goals": [
+      "Được nhận phòng nhanh nhất có thể",
+      "Nhận lời xin lỗi chân thành",
+      "Được thông báo giải pháp rõ ràng"
+    ]
+  },
+  "knowledge_base": {
+    "context": "Khách VIP đến sớm hơn dự kiến 20 phút. Phòng đang được dọn do khách trước trả phòng muộn. Sảnh khách sạn đang đông.",
+    "policies": [
+      {
+        "id": "pol_vip_01",
+        "title": "Quy trình xử lý khách VIP chờ phòng",
+        "content": "Nhân viên phải xin lỗi, xác minh đặt phòng, thông báo thời gian chờ dự kiến và đề xuất hỗ trợ như nước uống miễn phí hoặc khu vực chờ VIP."
+      },
+      {
+        "id": "pol_vip_02",
+        "title": "Không đổ lỗi cho khách",
+        "content": "Nhân viên không được đổ lỗi cho khách, bộ phận buồng phòng hoặc hệ thống. Cần nhận trách nhiệm đại diện khách sạn."
+      }
+    ]
+  },
+  "reward_system": {
+    "rules": [
+      {
+        "trigger": "user_apologize_professionally",
+        "reward": 10,
+        "penalty": -5,
+        "explanation": "Xin lỗi chuyên nghiệp giúp giảm căng thẳng ban đầu."
+      },
+      {
+        "trigger": "user_verify_booking",
+        "reward": 15,
+        "penalty": -10,
+        "explanation": "Xác minh thông tin đặt phòng trước khi đưa giải pháp."
+      },
+      {
+        "trigger": "user_offer_waiting_support",
+        "reward": 15,
+        "penalty": -5,
+        "explanation": "Đề xuất hỗ trợ trong thời gian khách phải chờ."
+      },
+      {
+        "trigger": "user_blame_housekeeping",
+        "reward": 0,
+        "penalty": -15,
+        "explanation": "Đổ lỗi cho bộ phận khác làm giảm tính chuyên nghiệp."
+      }
+    ],
+    "passing_score": 70
+  },
+  "runtime_state": {
+    "current_score": 0,
+    "current_event": "event_guest_arrival_angry",
+    "history": [],
+    "interacted_objects": [],
+    "active_memory": "Mr. Viktor vừa bước vào sảnh, tỏ ra khó chịu vì phòng VIP chưa sẵn sàng."
+  }
+}

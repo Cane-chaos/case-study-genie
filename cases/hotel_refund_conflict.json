@@ -1,0 +1,93 @@
+{
+  "case_metadata": {
+    "case_id": "hotel_refund_conflict_001",
+    "title": "Khách đòi hoàn tiền vì không hài lòng dịch vụ",
+    "difficulty": "Hard",
+    "category": "Hospitality"
+  },
+  "environment": {
+    "scene_id": "env_hotel_frontdesk_evening",
+    "smart_objects": [
+      {
+        "id": "obj_receipt",
+        "name": "Hóa đơn thanh toán",
+        "position": [1.0, 0.8, -0.4],
+        "is_required": true
+      },
+      {
+        "id": "obj_policy_book",
+        "name": "Sổ chính sách hoàn tiền",
+        "position": [0.6, 0.8, 0.0],
+        "is_required": true
+      }
+    ]
+  },
+  "persona": {
+    "name": "Mr. Daniel",
+    "prefab_id": "char_daniel_v2",
+    "traits": [
+      "Khó chịu",
+      "Đòi quyền lợi mạnh",
+      "Dễ đe dọa đánh giá xấu",
+      "Muốn được lắng nghe"
+    ],
+    "voice_style": "Nhanh, căng thẳng, có phần gây áp lực",
+    "initial_trust": 35,
+    "goals": [
+      "Được hoàn tiền một phần hoặc toàn bộ",
+      "Được giải thích rõ chính sách",
+      "Cảm thấy khách sạn lắng nghe vấn đề"
+    ]
+  },
+  "knowledge_base": {
+    "context": "Khách phàn nàn rằng phòng có tiếng ồn từ hành lang vào ban đêm. Khách đã ở đủ một đêm và yêu cầu hoàn toàn bộ tiền phòng.",
+    "policies": [
+      {
+        "id": "pol_refund_01",
+        "title": "Chính sách hoàn tiền sau khi lưu trú",
+        "content": "Sau khi khách đã sử dụng phòng qua đêm, khách sạn không hoàn toàn bộ tiền phòng trừ trường hợp lỗi nghiêm trọng được xác minh."
+      },
+      {
+        "id": "pol_service_recovery_01",
+        "title": "Khôi phục dịch vụ",
+        "content": "Nhân viên cần lắng nghe, xin lỗi vì trải nghiệm không tốt, ghi nhận khiếu nại và có thể đề xuất voucher, giảm giá hoặc chuyển quản lý xem xét."
+      }
+    ]
+  },
+  "reward_system": {
+    "rules": [
+      {
+        "trigger": "user_listen_and_empathize",
+        "reward": 15,
+        "penalty": -5,
+        "explanation": "Lắng nghe và đồng cảm trước khi nói về chính sách."
+      },
+      {
+        "trigger": "user_explain_refund_policy",
+        "reward": 15,
+        "penalty": -10,
+        "explanation": "Giải thích chính sách hoàn tiền rõ ràng, không máy móc."
+      },
+      {
+        "trigger": "user_offer_service_recovery",
+        "reward": 15,
+        "penalty": -5,
+        "explanation": "Đề xuất phương án khôi phục dịch vụ thay vì từ chối cứng."
+      },
+      {
+        "trigger": "user_promise_full_refund_without_authority",
+        "reward": 0,
+        "penalty": -20,
+        "explanation": "Hứa hoàn tiền toàn bộ khi không có thẩm quyền là sai quy trình."
+      }
+    ],
+    "passing_score": 70
+  },
+  "runtime_state": {
+    "current_score": 0,
+    "current_event": "event_refund_conflict_started",
+    "history": [],
+    "interacted_objects": [],
+    "active_memory": "Mr. Daniel đang tức giận vì cho rằng phòng quá ồn và yêu cầu hoàn toàn bộ tiền phòng."
+  }
+}

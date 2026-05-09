@@ -1,0 +1,93 @@
+{
+  "case_metadata": {
+    "case_id": "hotel_overbooking_001",
+    "title": "Khách đến nơi nhưng khách sạn bị overbooking",
+    "difficulty": "Hard",
+    "category": "Hospitality"
+  },
+  "environment": {
+    "scene_id": "env_hotel_lobby_luxury",
+    "smart_objects": [
+      {
+        "id": "obj_reservation_system",
+        "name": "Màn hình hệ thống đặt phòng",
+        "position": [0.8, 0.9, -0.3],
+        "is_required": true
+      },
+      {
+        "id": "obj_manager_phone",
+        "name": "Điện thoại gọi quản lý",
+        "position": [0.3, 0.8, 0.2],
+        "is_required": true
+      }
+    ]
+  },
+  "persona": {
+    "name": "Ms. Elena",
+    "prefab_id": "char_elena_v1",
+    "traits": [
+      "Bình tĩnh ban đầu",
+      "Dễ mất kiên nhẫn nếu bị nói vòng vo",
+      "Quan tâm quyền lợi khách hàng",
+      "Có kinh nghiệm đi công tác"
+    ],
+    "voice_style": "Lịch sự nhưng sắc bén",
+    "initial_trust": 50,
+    "goals": [
+      "Biết vì sao đặt phòng bị lỗi",
+      "Có chỗ ở tương đương hoặc tốt hơn",
+      "Được bồi thường hợp lý"
+    ]
+  },
+  "knowledge_base": {
+    "context": "Khách đã đặt phòng deluxe qua website. Khi đến nơi, hệ thống báo không còn phòng deluxe do overbooking. Khách có cuộc họp quan trọng sáng hôm sau.",
+    "policies": [
+      {
+        "id": "pol_overbooking_01",
+        "title": "Xử lý overbooking",
+        "content": "Nếu khách sạn overbooking, nhân viên phải xin lỗi, xác nhận lỗi thuộc về khách sạn, đề xuất nâng hạng nếu còn phòng hoặc hỗ trợ đặt khách sạn đối tác tương đương."
+      },
+      {
+        "id": "pol_compensation_01",
+        "title": "Bồi thường khi lỗi thuộc khách sạn",
+        "content": "Khách có thể được hỗ trợ chi phí di chuyển, voucher ăn sáng hoặc ưu đãi lần lưu trú tiếp theo tùy mức độ ảnh hưởng."
+      }
+    ]
+  },
+  "reward_system": {
+    "rules": [
+      {
+        "trigger": "user_acknowledge_hotel_fault",
+        "reward": 15,
+        "penalty": -10,
+        "explanation": "Thừa nhận trách nhiệm của khách sạn giúp xây dựng lại niềm tin."
+      },
+      {
+        "trigger": "user_offer_equivalent_solution",
+        "reward": 20,
+        "penalty": -10,
+        "explanation": "Đề xuất phòng hoặc khách sạn thay thế tương đương."
+      },
+      {
+        "trigger": "user_escalate_to_manager",
+        "reward": 10,
+        "penalty": 0,
+        "explanation": "Biết chuyển cấp xử lý khi vượt quyền hạn."
+      },
+      {
+        "trigger": "user_deny_responsibility",
+        "reward": 0,
+        "penalty": -20,
+        "explanation": "Phủ nhận trách nhiệm khiến tình huống leo thang."
+      }
+    ],
+    "passing_score": 75
+  },
+  "runtime_state": {
+    "current_score": 0,
+    "current_event": "event_overbooking_discovered",
+    "history": [],
+    "interacted_objects": [],
+    "active_memory": "Ms. Elena đã đến nhận phòng nhưng hệ thống báo không còn phòng deluxe dù cô đã đặt trước."
+  }
+}
